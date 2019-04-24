@@ -36,6 +36,7 @@ public class GithubRepoPageProcessor implements PageProcessor {
             //skip this page
             page.setSkip(true);
         }else{
+            //开始提取页面信息
             System.out.println("url:" + page.getUrl().toString());
             List<String> stringList = page.getResultItems().get("title");
             stringList.stream().forEach(System.out::println);

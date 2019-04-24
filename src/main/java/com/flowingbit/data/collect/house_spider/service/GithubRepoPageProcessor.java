@@ -1,5 +1,6 @@
 package com.flowingbit.data.collect.house_spider.service;
 
+import com.flowingbit.data.collect.house_spider.util.IOUtil;
 import org.apache.commons.lang3.StringUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -24,7 +25,11 @@ public class GithubRepoPageProcessor implements PageProcessor {
         // 部分二：定义如何抽取页面信息，并保存下来
         count++ ;
         page.putField("title",page.getHtml().xpath("//li[@class='pictext']/div[@class='item_main']"));
-        //System.out.println(page.getHtml().toString());
+        try{
+            IOUtil.outFile(page.getHtml().toString(),"C:/Users/flowi/Desktop/lianjia.html");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         System.out.println(page.getHtml().xpath("//li[@class='pictext']/div[@class='item_main']").get());
         if (page.getResultItems().get("title") == null) {
             //skip this page

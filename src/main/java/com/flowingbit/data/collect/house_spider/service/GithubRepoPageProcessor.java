@@ -1,5 +1,6 @@
 package com.flowingbit.data.collect.house_spider.service;
 
+import org.apache.commons.lang3.StringUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -7,25 +8,32 @@ import us.codecraft.webmagic.processor.PageProcessor;
 
 public class GithubRepoPageProcessor implements PageProcessor {
 
+    private static int count = 1;
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);
+    private Site site = Site.me()
+            .setRetryTimes(3)
+            .setSleepTime(1000)
+            .addHeader("User-Agent","-Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3095.5 Mobile Safari/537.36");
 
     /**
      * process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑
      */
     @Override
     public void process(Page page) {
+        System.out.println("进入process()方法");
         // 部分二：定义如何抽取页面信息，并保存下来
-        page.putField("author", page.getUrl().regex("https://github\\.com/(\\w+)/.*").toString());
-        page.putField("name", page.getHtml().xpath("//h1[@class='entry-title public']/strong/a/text()").toString());
-        if (page.getResultItems().get("name") == null) {
+        count++ ;
+        page.putField("title",page.getHtml().xpath("//li[@class='pictext']/div[@class='item_main']"));
+        //System.out.println(page.getHtml().toString());
+        System.out.println(page.getHtml().xpath("//li[@class='pictext']/div[@class='item_main']").get());
+        if (page.getResultItems().get("title") == null) {
             //skip this page
             page.setSkip(true);
         }
-        page.putField("readme", page.getHtml().xpath("//div[@id='readme']/tidyText()"));
-
         // 部分三：从页面发现后续的url地址来抓取
-        page.addTargetRequests(page.getHtml().links().regex("(https://github\\.com/[\\w\\-]+/[\\w\\-]+)").all());
+        int index = page.getUrl().toString().indexOf("pg");
+        String newPage = page.getUrl().toString().substring(0,index) + "pg" + count + "/";
+        page.addTargetRequest(newPage);
     }
 
     @Override
@@ -37,9 +45,9 @@ public class GithubRepoPageProcessor implements PageProcessor {
 
         Spider.create(new GithubRepoPageProcessor())
                 //从"https://github.com/code4craft"开始抓
-                .addUrl("https://github.com/code4craft")
-                //开启5个线程抓取
-                .thread(5)
+                .addUrl("https://nj.lianjia.com/ershoufang/pg1")
+                //开启2个线程抓取
+                .thread(2)
                 //启动爬虫
                 .run();
     }

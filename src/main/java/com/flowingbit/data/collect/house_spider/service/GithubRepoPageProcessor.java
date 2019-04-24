@@ -7,6 +7,8 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 
+import java.util.List;
+
 public class GithubRepoPageProcessor implements PageProcessor {
 
     private static int count = 1;
@@ -21,10 +23,9 @@ public class GithubRepoPageProcessor implements PageProcessor {
      */
     @Override
     public void process(Page page) {
-        System.out.println("进入process()方法");
         // 部分二：定义如何抽取页面信息，并保存下来
         count++ ;
-        page.putField("title",page.getHtml().xpath("//div[@class='item_main']/text()"));
+        page.putField("title",page.getHtml().xpath("//div[@class='item_main']/text()").all());
 //        // 将html输出到文件
 //        try{
 //            IOUtil.outFile(page.getHtml().toString(),"C:/Users/flowi/Desktop/lianjia.html");
@@ -35,8 +36,9 @@ public class GithubRepoPageProcessor implements PageProcessor {
             //skip this page
             page.setSkip(true);
         }else{
-            System.out.print("房屋title: ");
-            System.out.println(page.getHtml().xpath("//div[@class='item_main']/text()").toString());
+            System.out.println("url:" + page.getUrl().toString());
+            List<String> stringList = page.getResultItems().get("title");
+            stringList.stream().forEach(System.out::println);
         }
         // 部分三：从页面发现后续的url地址来抓取
         int index = page.getUrl().toString().indexOf("pg");

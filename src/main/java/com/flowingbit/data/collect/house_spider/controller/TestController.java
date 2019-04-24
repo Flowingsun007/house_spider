@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/test")
+@RequestMapping(value = "/house")
 public class TestController {
 
     @Autowired
     TestService testService;
 
-    @GetMapping(path = "/github")
+    @GetMapping(path = "/lianjia")
     public String test(){
         return testService.test();
     }

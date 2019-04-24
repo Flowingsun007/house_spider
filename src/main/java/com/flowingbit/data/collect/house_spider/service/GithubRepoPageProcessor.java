@@ -24,16 +24,19 @@ public class GithubRepoPageProcessor implements PageProcessor {
         System.out.println("进入process()方法");
         // 部分二：定义如何抽取页面信息，并保存下来
         count++ ;
-        page.putField("title",page.getHtml().xpath("//li[@class='pictext']/div[@class='item_main']"));
-        try{
-            IOUtil.outFile(page.getHtml().toString(),"C:/Users/flowi/Desktop/lianjia.html");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        System.out.println(page.getHtml().xpath("//li[@class='pictext']/div[@class='item_main']").get());
+        page.putField("title",page.getHtml().xpath("//div[@class='item_main']/text()"));
+//        // 将html输出到文件
+//        try{
+//            IOUtil.outFile(page.getHtml().toString(),"C:/Users/flowi/Desktop/lianjia.html");
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
         if (page.getResultItems().get("title") == null) {
             //skip this page
             page.setSkip(true);
+        }else{
+            System.out.print("房屋title: ");
+            System.out.println(page.getHtml().xpath("//div[@class='item_main']/text()").toString());
         }
         // 部分三：从页面发现后续的url地址来抓取
         int index = page.getUrl().toString().indexOf("pg");

@@ -1,4 +1,4 @@
-package com.flowingbit.data.collect.house_spider.util;
+package com.flowingbit.data.collect.house_spider.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;

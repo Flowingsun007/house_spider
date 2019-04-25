@@ -5,8 +5,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestService {
     public String test(){
-        GithubRepoPageProcessor githubRepoPageProcessor = new GithubRepoPageProcessor();
-        githubRepoPageProcessor.main(new String[3]);
+//        SecondHouseProcessor secondHouseProcessor = new SecondHouseProcessor();
+//        secondHouseProcessor.main(new String[3]);
+
+        SecondHandHouseProcessor secondHandHouseProcessor = new SecondHandHouseProcessor();
+        secondHandHouseProcessor.main(new String[3]);
         return "";
     }
 }

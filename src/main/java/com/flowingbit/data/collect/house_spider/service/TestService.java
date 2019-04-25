@@ -5,11 +5,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestService {
     public String test(){
-//        SecondHouseProcessor secondHouseProcessor = new SecondHouseProcessor();
-//        secondHouseProcessor.main(new String[3]);
-
-        SecondHandHouseProcessor secondHandHouseProcessor = new SecondHandHouseProcessor();
-        secondHandHouseProcessor.main(new String[3]);
+       // SecondHandHouseProcessor secondHandHouseProcessor = new SecondHandHouseProcessor();
+//        SecondHandHouseProcessorCookie processor = new SecondHandHouseProcessorCookie();
+        SecondHandHouseProcessorHeader processor = new SecondHandHouseProcessorHeader();
+        processor.main(new String[3]);
         return "";
     }
 }

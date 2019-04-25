@@ -9,7 +9,7 @@ import us.codecraft.webmagic.selector.Selectable;
 
 import java.util.List;
 
-public class SecondHouseProcessor implements PageProcessor {
+public class SecondHandHouseProcessorCookie implements PageProcessor {
 
     private static int count = 1;
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
@@ -84,7 +84,7 @@ public class SecondHouseProcessor implements PageProcessor {
 
     public static void main(String[] args) {
 
-        Spider.create(new SecondHouseProcessor())
+        Spider.create(new SecondHandHouseProcessorCookie())
                 //从"https://nj.lianjia.com/ershoufang/pg1"开始抓
                 .addUrl("https://nj.lianjia.com/ershoufang/pg1")
                 //开启2个线程抓取

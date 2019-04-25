@@ -1,5 +1,6 @@
 package com.flowingbit.data.collect.house_spider.service;
 
+import com.flowingbit.data.collect.house_spider.model.House;
 import com.flowingbit.data.collect.house_spider.utils.IOUtil;
 import org.apache.commons.lang3.StringUtils;
 import us.codecraft.webmagic.Page;
@@ -46,13 +47,14 @@ public class SecondHandHouseProcessorHeader implements PageProcessor {
             page.setSkip(true);
         }else{
             //开始提取页面信息
+            House house = new House();
             System.out.println("================url:=================\n" + page.getUrl().toString());
             List<Selectable> targets = page.getHtml().xpath("//li[@class='clear LOGCLICKDATA']").nodes();
             targets.forEach(e->{
                 String title = e.xpath("//div[@class='title']/a[1]/text()").toString();
-                String houseUrl = e.xpath("//a[@class='noresultRecommend img ']/@href").toString();
-                String img = e.xpath("//img[@class='lj-lazy']/@data-original").toString();
-                String s = e.xpath("//div[@class='houseInfo']/text()").toString();
+                String url = e.xpath("//a[@class='noresultRecommend img ']/@href").toString();
+                String image = e.xpath("//div[@class='houseInfo']/text()").toString();
+                String s = e.xpath("//div[@class='houseInfo']/a/text()").toString();
                 String community = e.xpath("//div[@class='houseInfo']/a/text()").toString();
                 String floor = e.xpath("//div[@class='positionInfo']/text()").toString();
                 String region = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
@@ -61,22 +63,37 @@ public class SecondHandHouseProcessorHeader implements PageProcessor {
 
                 String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
                 String[] sl = followInfo.split("/");
-                String whtch = sl[0];
+                String watch = sl[0];
                 String view = sl[1];
                 String releaseDate = sl[2];
 
-                System.out.println("标题"+title);
-                System.out.println("链接:"+houseUrl);
-                System.out.println("图片:"+img);
-                System.out.println("关注人数:" + whtch);
-                System.out.println("浏览次数：" + view);
-                System.out.println("发布时间:" + releaseDate);
-                System.out.println("房屋信息：" + s);
-                //StringUtils.strip(s.strip(),"|").strip().split("|"));
                 String ss = StringUtils.strip(s.strip(),"|").strip();
-                System.out.println("ss:" + ss);
-                String[] houseInfo = StringUtils.split(ss," | ");
-                Arrays.asList(houseInfo).forEach(System.out::println);
+                String[] houseInfo = StringUtils.split(ss,"|");
+                String roomCount = houseInfo[0].strip();
+                System.out.println("houseInfo[1].strip():"+houseInfo[1].strip());
+                Double houseArea = Double.valueOf(houseInfo[1].strip());
+                String towards = houseInfo[2].strip();
+                String decoration = houseInfo[3].strip();
+                String elevator = houseInfo[4].strip();
+
+                house.setTitle(title);
+                house.setUrl(url);
+                house.setCommunity(community);
+                house.setRegion(region);
+                house.setFloor(floor);
+                house.setTotalPrice(Integer.valueOf(totolPrice));
+                house.setAveragePrice(Double.valueOf(averagePrice));
+                house.setImage(image);
+                house.setWatch(Integer.valueOf(watch));
+                house.setView(Integer.valueOf(view));
+                house.setReleaseDate(releaseDate);
+                house.setRoomCount(roomCount);
+                house.setHouseArea(houseArea);
+                house.setTowards(towards);
+                house.setDecoration(decoration);
+                house.setElevator(elevator);
+                System.out.println(house.toString());
+                page.putField("house",house);
 
             });
         }

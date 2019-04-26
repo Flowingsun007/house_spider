@@ -32,22 +32,21 @@ public class EmailService {
     private static JavaMailSenderImpl createAliMailSender() {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(HOST);
-        sender.setPort(PORT);
+        sender.setPort(ALI_PORT);
         sender.setUsername(USERNAME);
         sender.setPassword(PASSWORD);
         sender.setDefaultEncoding("Utf-8");
         Properties prop = new Properties();
-        prop.setProperty("mail.smtp.port",PORT.toString());
+        prop.setProperty("mail.smtp.port",ALI_PORT.toString());
         prop.setProperty("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");
         prop.setProperty("mail.smtp.socketFactory.fallback","false");
-        prop.setProperty("mail.smtp.socketFactory.port",PORT.toString());
+        prop.setProperty("mail.smtp.socketFactory.port",ALI_PORT.toString());
         sender.setJavaMailProperties(prop);
         return sender;
     }
 
     /**
      * 发送邮件
-     * @param [request, toEmail, userName, randomCode, userphone]
      * @throws MessagingException 异常
      * @throws UnsupportedEncodingException 异常
      * @detail Windows和Mac上的分支，用mailSender即可，部署阿里云的server分支需要用aliMailSender

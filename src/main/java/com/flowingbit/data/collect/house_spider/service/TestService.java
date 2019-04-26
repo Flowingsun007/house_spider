@@ -4,11 +4,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TestService {
-    public String test(){
+    public void runSpider(){
        // SecondHandHouseProcessor secondHandHouseProcessor = new SecondHandHouseProcessor();
 //        SecondHandHouseProcessorCookie processor = new SecondHandHouseProcessorCookie();
-        //SecondHandHouseProcessorHeader processor = new SecondHandHouseProcessorHeader();
-        //processor.main(new String[3]);
-        return "";
+        SecondHandHouseProcessorHeader processor = new SecondHandHouseProcessorHeader();
+        processor.main(new String[3]);
     }
 }

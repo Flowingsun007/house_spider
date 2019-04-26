@@ -19,7 +19,7 @@ public class TestController {
     SecondHandHouseProcessorHeader secondHandHouseProcessorHeader;
 
     @GetMapping(path = "/lianjia")
-    public String test(){
-        return testService.test();
+    public void runSpider(){
+        testService.runSpider();
     }
 }

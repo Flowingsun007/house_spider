@@ -59,7 +59,7 @@ public class SecondHandHouseProcessorHeader implements PageProcessor {
             } else {
                 List<House> houseList = new ArrayList<>();
                 //开始提取页面信息
-                System.out.println("================url:=================\n" + page.getUrl().toString());
+                System.out.println(page.getUrl().toString());
                 List<Selectable> targets = page.getHtml().xpath("//li[@class='clear LOGCLICKDATA']").nodes();
                 targets.forEach(e -> {
                     House house = new House();
@@ -114,10 +114,11 @@ public class SecondHandHouseProcessorHeader implements PageProcessor {
                     house.setDecoration(decoration);
                     house.setElevator(elevator);
                     System.out.println(house.toString());
-                    houseDao.add(house);
+                    //houseDao.insert(house);
                     houseList.add(house);
                 });
                 //将结果存到key：houses中
+                houseDao.batchInsert(houseList);
                 //page.putField("houses", houseList);
             }
 
@@ -128,7 +129,9 @@ public class SecondHandHouseProcessorHeader implements PageProcessor {
         }catch (Exception eee){
             try {
                 EmailService.sendHtmlMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
+                System.out.println("邮件发送成功");
             } catch (MessagingException e) {
+                System.out.println("邮件发送失败");
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

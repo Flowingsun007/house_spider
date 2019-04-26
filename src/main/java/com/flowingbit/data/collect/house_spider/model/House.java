@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
@@ -35,10 +36,6 @@ public class House {
     private String decoration;
     private String elevator;
     private Date createDate;
-
-    public House(){
-        this.createDate = new Date();
-    }
 
     public String getId() {
         return id;

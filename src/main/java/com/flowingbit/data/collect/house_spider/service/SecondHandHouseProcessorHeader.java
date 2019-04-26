@@ -2,6 +2,7 @@ package com.flowingbit.data.collect.house_spider.service;
 
 import com.flowingbit.data.collect.house_spider.dao.HouseDao;
 import com.flowingbit.data.collect.house_spider.model.House;
+import com.flowingbit.data.collect.house_spider.service.email.service.EmailService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,11 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -34,91 +39,103 @@ public class SecondHandHouseProcessorHeader implements PageProcessor {
      */
     @Override
     public void process(Page page) {
-        System.out.println("=============process()================");
-        // 部分二：定义如何抽取页面信息，并保存下来
-        count++;
-        if (page.getHtml().xpath("//ul[@class='sellListContent']").match())
-            page.putField("target", "Target html is exist!");
-        //将html输出到文件
+        try {
+            System.out.println("=============process()================");
+            // 部分二：定义如何抽取页面信息，并保存下来
+            count++;
+            if (page.getHtml().xpath("//ul[@class='sellListContent']").match())
+                page.putField("target", "Target html is exist!");
+            //将html输出到文件
 //        try {
 //            // C:/Users/flowi/Desktop/lianjia.html
 //            IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        if (page.getResultItems().get("target") == null) {
-            System.out.println("=============target==null================");
-            //skip this page
-            page.setSkip(true);
-        } else {
-            List<House> houseList = new ArrayList<>();
-            //开始提取页面信息
-            System.out.println("================url:=================\n" + page.getUrl().toString());
-            List<Selectable> targets = page.getHtml().xpath("//li[@class='clear LOGCLICKDATA']").nodes();
-            targets.forEach(e -> {
-                House house = new House();
-                String title = e.xpath("//div[@class='title']/a[1]/text()").toString();
-                String url = e.xpath("//a[@class='noresultRecommend img ']/@href").toString();
-                String image = e.xpath("//img[@class='lj-lazy']/@data-original").toString();
-                String s = e.xpath("//div[@class='houseInfo']/text()").toString();
-                String community = e.xpath("//div[@class='houseInfo']/a/text()").toString();
-                String floor = e.xpath("//div[@class='positionInfo']/text()").toString();
-                String region = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
-                String totolPrice = e.xpath("//div[@class='totalPrice']/span[1]/text()").toString();
-                String averagePrice = StringUtils.strip(StringUtils.strip(e.xpath("//div[@class='unitPrice']/span[1]/text()").toString(), "单价"), "元/平米");
+            if (page.getResultItems().get("target") == null) {
+                System.out.println("=============target==null================");
+                //skip this page
+                page.setSkip(true);
+            } else {
+                List<House> houseList = new ArrayList<>();
+                //开始提取页面信息
+                System.out.println("================url:=================\n" + page.getUrl().toString());
+                List<Selectable> targets = page.getHtml().xpath("//li[@class='clear LOGCLICKDATA']").nodes();
+                targets.forEach(e -> {
+                    House house = new House();
+                    String title = e.xpath("//div[@class='title']/a[1]/text()").toString();
+                    String url = e.xpath("//a[@class='noresultRecommend img ']/@href").toString();
+                    String image = e.xpath("//img[@class='lj-lazy']/@data-original").toString();
+                    String s = e.xpath("//div[@class='houseInfo']/text()").toString();
+                    String community = e.xpath("//div[@class='houseInfo']/a/text()").toString();
+                    String floor = e.xpath("//div[@class='positionInfo']/text()").toString();
+                    String region = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
+                    String totolPrice = e.xpath("//div[@class='totalPrice']/span[1]/text()").toString();
+                    String averagePrice = StringUtils.strip(StringUtils.strip(e.xpath("//div[@class='unitPrice']/span[1]/text()").toString(), "单价"), "元/平米");
 
-                String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
-                String[] sl = followInfo.split("/");
-                String watch = collectStringNumber(sl[0]);
-                String view = collectStringNumber(sl[1]);
-                String releaseDate = sl[2];
+                    String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
+                    String[] sl = followInfo.split("/");
+                    String watch = collectStringNumber(sl[0]);
+                    String view = collectStringNumber(sl[1]);
+                    String releaseDate = sl[2];
 
 
-                String ss = StringUtils.strip(s.strip(), "|").strip();
-                String[] houseInfo = StringUtils.split(ss, "|");
-                String roomCount = houseInfo[0].strip();
-                Double houseArea = 0.0;
-                try{
-                    houseArea = Double.valueOf(houseInfo[1].strip().split("平米")[0]);
-                }catch (NumberFormatException nn){}
-                String towards = houseInfo[2].strip();
-                String decoration = houseInfo[3].strip();
-                String elevator = "";
-                try {
-                    elevator = houseInfo[4].strip();
-                } catch (ArrayIndexOutOfBoundsException ee) {
-                }
+                    String ss = StringUtils.strip(s.strip(), "|").strip();
+                    String[] houseInfo = StringUtils.split(ss, "|");
+                    String roomCount = houseInfo[0].strip();
+                    Double houseArea = 0.0;
+                    try {
+                        houseArea = Double.valueOf(houseInfo[1].strip().split("平米")[0]);
+                    } catch (NumberFormatException nn) {
+                    }
+                    String towards = houseInfo[2].strip();
+                    String decoration = houseInfo[3].strip();
+                    String elevator = "";
+                    try {
+                        elevator = houseInfo[4].strip();
+                    } catch (ArrayIndexOutOfBoundsException ee) {
+                    }
 
-                house.setId(collectStringNumber(url));
-                house.setTitle(title);
-                house.setUrl(url);
-                house.setCommunity(community);
-                house.setRegion(region);
-                house.setFloor(floor);
-                house.setTotalPrice(Double.valueOf(totolPrice));
-                house.setAveragePrice(Double.valueOf(averagePrice));
-                house.setImage(image);
-                house.setWatch(Integer.valueOf(watch));
-                house.setView(Integer.valueOf(view));
-                house.setReleaseDate(releaseDate);
-                house.setRoomCount(roomCount);
-                house.setHouseArea(houseArea);
-                house.setTowards(towards);
-                house.setDecoration(decoration);
-                house.setElevator(elevator);
-                System.out.println(house.toString());
-                houseDao.add(house);
-                houseList.add(house);
-            });
-            //将结果存到key：houses中
-            //page.putField("houses", houseList);
+                    house.setId(collectStringNumber(url));
+                    house.setTitle(title);
+                    house.setUrl(url);
+                    house.setCommunity(community);
+                    house.setRegion(region);
+                    house.setFloor(floor);
+                    house.setTotalPrice(Double.valueOf(totolPrice));
+                    house.setAveragePrice(Double.valueOf(averagePrice));
+                    house.setImage(image);
+                    house.setWatch(Integer.valueOf(watch));
+                    house.setView(Integer.valueOf(view));
+                    house.setReleaseDate(releaseDate);
+                    house.setRoomCount(roomCount);
+                    house.setHouseArea(houseArea);
+                    house.setTowards(towards);
+                    house.setDecoration(decoration);
+                    house.setElevator(elevator);
+                    System.out.println(house.toString());
+                    houseDao.add(house);
+                    houseList.add(house);
+                });
+                //将结果存到key：houses中
+                //page.putField("houses", houseList);
+            }
+
+            // 部分三：从页面发现后续的url地址来抓取
+            int index = page.getUrl().toString().indexOf("pg");
+            String newPage = page.getUrl().toString().substring(0, index) + "pg" + count + "/";
+            page.addTargetRequest(newPage);
+        }catch (Exception eee){
+            try {
+                EmailService.sendHtmlMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
-
-        // 部分三：从页面发现后续的url地址来抓取
-        int index = page.getUrl().toString().indexOf("pg");
-        String newPage = page.getUrl().toString().substring(0, index) + "pg" + count + "/";
-        page.addTargetRequest(newPage);
     }
+
 
     @Override
     public Site getSite() {

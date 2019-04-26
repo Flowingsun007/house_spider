@@ -25,7 +25,7 @@ public class HouseDao {
 
     public int add(House house) {
         try {
-            String sql = "INSERT INTO `house_spider`.`house` (`id`, `title`, `url` , `community`, `region`, `floor`, `total_price`, `average_price`, `image`, `watch`, `view`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `elevator`, `create_date`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?, ?,?);";
+            String sql = "INSERT IGNORE INTO `house_spider`.`house` (`id`, `title`, `url` , `community`, `region`, `floor`, `total_price`, `average_price`, `image`, `watch`, `view`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `elevator`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?, ?);";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, house.getId());
             ps.setString(2, house.getTitle());
@@ -44,7 +44,6 @@ public class HouseDao {
             ps.setDouble(15, house.getHouseArea());
             ps.setString(16, house.getDecoration());
             ps.setString(17, house.getElevator());
-            ps.setDate(18, new java.sql.Date(house.getCreateDate().getTime()));
             return ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

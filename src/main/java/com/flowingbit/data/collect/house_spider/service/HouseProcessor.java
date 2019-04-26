@@ -3,8 +3,8 @@ package com.flowingbit.data.collect.house_spider.service;
 import com.flowingbit.data.collect.house_spider.dao.HouseDao;
 import com.flowingbit.data.collect.house_spider.model.House;
 import com.flowingbit.data.collect.house_spider.service.email.service.EmailService;
+import com.flowingbit.data.collect.house_spider.utils.IOUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -14,13 +14,11 @@ import us.codecraft.webmagic.selector.Selectable;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Component
-public class SecondHandHouseProcessorHeader implements PageProcessor {
+public class HouseProcessor implements PageProcessor {
 
     private static HouseDao houseDao = new HouseDao();
 
@@ -46,12 +44,8 @@ public class SecondHandHouseProcessorHeader implements PageProcessor {
             if (page.getHtml().xpath("//ul[@class='sellListContent']").match())
                 page.putField("target", "Target html is exist!");
             //将html输出到文件
-//        try {
-//            // C:/Users/flowi/Desktop/lianjia.html
-//            IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+            // C:/Users/flowi/Desktop/lianjia.html
+            //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
             if (page.getResultItems().get("target") == null) {
                 System.out.println("=============target==null================");
                 //skip this page
@@ -156,7 +150,7 @@ public class SecondHandHouseProcessorHeader implements PageProcessor {
     }
 
     public static void main(String[] args){
-        Spider.create(new SecondHandHouseProcessorHeader())
+        Spider.create(new HouseProcessor())
                 //从"https://github.com/code4craft"开始抓
                 .addUrl("https://nj.lianjia.com/ershoufang/pg1")
                 //开启2个线程抓取

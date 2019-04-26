@@ -1,25 +1,24 @@
 package com.flowingbit.data.collect.house_spider.controller;
 
-import com.flowingbit.data.collect.house_spider.service.SecondHandHouseProcessorHeader;
-import com.flowingbit.data.collect.house_spider.service.TestService;
+import com.flowingbit.data.collect.house_spider.service.HouseProcessor;
+import com.flowingbit.data.collect.house_spider.service.SpiderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/house")
-public class TestController {
+public class SpiderController {
 
     @Autowired
-    TestService testService;
+    SpiderService spiderService;
 
     @Autowired
-    SecondHandHouseProcessorHeader secondHandHouseProcessorHeader;
+    HouseProcessor houseProcessor;
 
     @GetMapping(path = "/lianjia")
     public void runSpider(){
-        testService.runSpider();
+        spiderService.runSpider();
     }
 }

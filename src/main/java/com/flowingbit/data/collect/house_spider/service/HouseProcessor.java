@@ -66,18 +66,15 @@ public class HouseProcessor implements PageProcessor {
                     String region = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
                     String totolPrice = e.xpath("//div[@class='totalPrice']/span[1]/text()").toString();
                     String averagePrice = StringUtils.strip(StringUtils.strip(e.xpath("//div[@class='unitPrice']/span[1]/text()").toString(), "单价"), "元/平米");
-
                     String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
                     String[] sl = followInfo.split("/");
                     String watch = collectStringNumber(sl[0]);
                     String view = collectStringNumber(sl[1]);
                     String releaseDate = sl[2];
-
-
                     String ss = StringUtils.strip(s.strip(), "|").strip();
                     String[] houseInfo = StringUtils.split(ss, "|");
                     String roomCount = houseInfo[0].strip();
-                    Double houseArea = 0.0;
+                    Double houseArea = null;
                     try {
                         houseArea = Double.valueOf(houseInfo[1].strip().split("平米")[0]);
                     } catch (NumberFormatException nn) {

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class HouseProcessor implements PageProcessor {
+public class CityHouseProcessor implements PageProcessor {
 
     private static HouseDao houseDao = new HouseDao();
 
@@ -146,7 +146,7 @@ public class HouseProcessor implements PageProcessor {
     }
 
     public static void main(String[] args){
-        Spider.create(new HouseProcessor())
+        Spider.create(new CityHouseProcessor())
                 //从"https://github.com/code4craft"开始抓
                 .addUrl("https://nj.lianjia.com/ershoufang/pg1")
                 //开启2个线程抓取

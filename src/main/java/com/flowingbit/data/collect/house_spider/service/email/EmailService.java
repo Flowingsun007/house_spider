@@ -1,4 +1,4 @@
-package com.flowingbit.data.collect.house_spider.service.email.service;
+package com.flowingbit.data.collect.house_spider.service.email;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;

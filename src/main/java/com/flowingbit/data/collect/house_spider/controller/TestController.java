@@ -1,5 +1,6 @@
 package com.flowingbit.data.collect.house_spider.controller;
 
+import com.flowingbit.data.collect.house_spider.service.SecondHandHouseProcessorHeader;
 import com.flowingbit.data.collect.house_spider.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,9 @@ public class TestController {
 
     @Autowired
     TestService testService;
+
+    @Autowired
+    SecondHandHouseProcessorHeader secondHandHouseProcessorHeader;
 
     @GetMapping(path = "/lianjia")
     public String test(){

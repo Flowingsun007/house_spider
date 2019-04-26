@@ -13,7 +13,7 @@ import java.util.UUID;
  * @description House
  **/
 @Entity
-@Table(name="lianjia")
+@Table(name="house")
 public class House {
     @Id
     @Column
@@ -23,7 +23,7 @@ public class House {
     private String community;
     private String region;
     private String floor;
-    private Integer totalPrice;
+    private Double totalPrice;
     private Double averagePrice;
     private String image;
     private Integer watch;
@@ -37,7 +37,6 @@ public class House {
     private Date createDate;
 
     public House(){
-        this.id = UUID.randomUUID().toString();
         this.createDate = new Date();
     }
 
@@ -89,11 +88,11 @@ public class House {
         this.floor = floor;
     }
 
-    public Integer getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Integer totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

@@ -7,8 +7,8 @@ public class TestService {
     public String test(){
        // SecondHandHouseProcessor secondHandHouseProcessor = new SecondHandHouseProcessor();
 //        SecondHandHouseProcessorCookie processor = new SecondHandHouseProcessorCookie();
-        SecondHandHouseProcessorHeader processor = new SecondHandHouseProcessorHeader();
-        processor.main(new String[3]);
+        //SecondHandHouseProcessorHeader processor = new SecondHandHouseProcessorHeader();
+        //processor.main(new String[3]);
         return "";
     }
 }

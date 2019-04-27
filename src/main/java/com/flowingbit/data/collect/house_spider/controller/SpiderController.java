@@ -18,16 +18,16 @@ public class SpiderController {
     /**
      * 爬取全国的链家二手房
      */
-    @PostMapping(path = "/city")
-    public void runCitySpider(String cityName){
-        spiderService.runCitySpider(cityName);
+    @GetMapping(path = "/nation")
+    public void runNationSpider(){
+        spiderService.runNationSpider();
     }
 
     /**
      * 爬取全国的链家二手房
      */
-    @GetMapping(path = "/nation")
-    public void runNationSpider(){
-        spiderService.runNationSpider();
+    @PostMapping(path = "/city")
+    public void runCitySpider(String cityName){
+        spiderService.runCitySpider(cityName);
     }
 }

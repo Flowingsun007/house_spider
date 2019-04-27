@@ -11,7 +11,7 @@ public class Street implements Serializable {
     /**
      * 英文名称
      */
-    private String enName;
+    private String briefName;
 
     public String getName() {
         return name;
@@ -21,11 +21,19 @@ public class Street implements Serializable {
         this.name = name;
     }
 
-    public String getEnName() {
-        return enName;
+    public String getBriefName() {
+        return briefName;
     }
 
-    public void setEnName(String enName) {
-        this.enName = enName;
+    public void setBriefName(String briefName) {
+        this.briefName = briefName;
+    }
+
+    @Override
+    public String toString() {
+        return "Street{" +
+                "name='" + name + '\'' +
+                ", briefName='" + briefName + '\'' +
+                '}';
     }
 }

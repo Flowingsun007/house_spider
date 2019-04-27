@@ -66,7 +66,7 @@ public class StreetProcessor implements PageProcessor {
                 String streetName = e.xpath("a/text()").toString();
                 String streetUrl = e.xpath("a/@href").toString();
                 street.setName(streetName);
-                street.setEnName(StringUtils.substringBetween(streetUrl, "/ershoufang/", "/"));
+                street.setBriefName(StringUtils.substringBetween(streetUrl, "/ershoufang/", "/"));
                 System.out.println("街道：" + streetName);
                 System.out.println("  |——链接：" + streetUrl);
                 streetList.add(street);

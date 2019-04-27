@@ -1,11 +1,10 @@
 package com.flowingbit.data.collect.house_spider.service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.flowingbit.data.collect.house_spider.dao.HouseDao;
-import com.flowingbit.data.collect.house_spider.model.CityRegion;
-import com.flowingbit.data.collect.house_spider.model.House;
+import com.flowingbit.data.collect.house_spider.model.Region;
+import com.flowingbit.data.collect.house_spider.model.Street;
 import com.flowingbit.data.collect.house_spider.service.email.EmailService;
 import com.flowingbit.data.collect.house_spider.utils.IOUtil;
+import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
@@ -14,13 +13,11 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
 
-import javax.mail.MessagingException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CityRegionProcessor implements PageProcessor {
+public class StreetProcessor implements PageProcessor {
 
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me()
@@ -39,38 +36,30 @@ public class CityRegionProcessor implements PageProcessor {
         try {
             System.out.println("=============process()================");
             // 部分二：定义如何抽取页面信息，并保存下来
-            if (!page.getHtml().xpath("//div[@class='city_list']").match()){
+            if (!page.getHtml().xpath("//div[@data-role='ershoufang']").match()){
                 page.setSkip(true);
             }
             //将html输出到文件
             // C:/Users/flowi/Desktop/lianjia.html
             //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
-
-            if(page.getResultItems().get("cityRegion")==null){
-                page.putField("cityRegion", new CityRegion());
-                page.setSkip(true);
-            }
-            CityRegion cityRegion = (CityRegion)page.getResultItems().get("cityRegion");
+            List<Street> streetList = new ArrayList<>();
             //开始提取页面信息
             System.out.println(page.getUrl().toString());
-            List<Selectable> provinces = page.getHtml().xpath("//div[@class='city_province']").nodes();
-            provinces.forEach(e -> {
-                String province = e.xpath("//div[@class='city_list_tit c_b']/text()").toString();
-                System.out.println("省份："+province);
-                List<Selectable> citys = e.xpath("//ul[1]/li").nodes();
-                citys.forEach(f->{
-                    String cityName = f.xpath("//a/text()").toString();
-                    String cityUrl = f.xpath("//a/@href").toString();
-                    cityRegion.getCitys().add(cityName);
-                    cityRegion.getCityMap().put(cityName, cityUrl);
-                    System.out.println("  |——城市："+cityName + " " + cityUrl);
-                });
-
+            List<Selectable> streets = page.getHtml().xpath("//div[@data-role='ershoufang']/div[2]/a").nodes();
+            streets.forEach(e -> {
+                Street street = new Street();
+                String streetName = e.xpath("a/text()").toString();
+                String streetUrl = e.xpath("a/@href").toString();
+                street.setName(streetName);
+                street.setEnName(StringUtils.substringBetween(streetUrl, "/ershoufang/", "/"));
+                System.out.println("街道：" + streetName);
+                System.out.println("  |——链接：" + streetUrl);
+                streetList.add(street);
             });
-            page.putField("cityRegion", cityRegion);
             //存成json文件
-            JSONObject job = (JSONObject)JSONObject.toJSON(cityRegion);
-            IOUtil.outFile(job.toString(), "cityRegion.json");
+            String jsonstr = JSONArray.toJSONString(streetList);
+            IOUtil.outFile(jsonstr, "streets.json");
+
         }catch (Exception eee){
             eee.printStackTrace();
             EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
@@ -85,9 +74,9 @@ public class CityRegionProcessor implements PageProcessor {
 
 
     public static void main(String[] args){
-        Spider.create(new CityRegionProcessor())
+        Spider.create(new StreetProcessor())
                 //从"https://www.lianjia.com/city/"开始抓
-                .addUrl("https://www.lianjia.com/city/")
+                .addUrl("https://nj.lianjia.com/ershoufang/jianye/")
                 //开启2个线程抓取
                 .thread(1)
                 //启动爬虫

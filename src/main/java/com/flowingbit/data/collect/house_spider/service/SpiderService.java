@@ -2,8 +2,6 @@ package com.flowingbit.data.collect.house_spider.service;
 
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
 @Service
 public class SpiderService {
 
@@ -13,7 +11,10 @@ public class SpiderService {
         //HouseProcessor processor = new HouseProcessor();
         //processor.main(new String[3]);
 
-        CityRegionProcessor processor = new CityRegionProcessor();
+//        CityProcessor processor = new CityProcessor();
+//        processor.main(new String[3]);
+
+        RegionProcessor processor = new RegionProcessor();
         processor.main(new String[3]);
     }
 }

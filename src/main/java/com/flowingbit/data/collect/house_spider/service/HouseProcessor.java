@@ -3,6 +3,7 @@ package com.flowingbit.data.collect.house_spider.service;
 import com.flowingbit.data.collect.house_spider.dao.HouseDao;
 import com.flowingbit.data.collect.house_spider.model.House;
 import com.flowingbit.data.collect.house_spider.service.email.EmailService;
+import com.flowingbit.data.collect.house_spider.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
@@ -62,13 +63,13 @@ public class HouseProcessor implements PageProcessor {
                     String s = e.xpath("//div[@class='houseInfo']/text()").toString();
                     String community = e.xpath("//div[@class='houseInfo']/a/text()").toString();
                     String floor = e.xpath("//div[@class='positionInfo']/text()").toString();
-                    String region = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
+                    String street = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
                     String totolPrice = e.xpath("//div[@class='totalPrice']/span[1]/text()").toString();
                     String averagePrice = StringUtils.strip(StringUtils.strip(e.xpath("//div[@class='unitPrice']/span[1]/text()").toString(), "单价"), "元/平米");
                     String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
                     String[] sl = followInfo.split("/");
-                    String watch = collectStringNumber(sl[0]);
-                    String view = collectStringNumber(sl[1]);
+                    String watch = StringUtil.collectStringNumber(sl[0]);
+                    String view = StringUtil.collectStringNumber(sl[1]);
                     String releaseDate = sl[2];
                     String ss = StringUtils.strip(s.strip(), "|").strip();
                     String[] houseInfo = StringUtils.split(ss, "|");
@@ -86,11 +87,12 @@ public class HouseProcessor implements PageProcessor {
                     } catch (ArrayIndexOutOfBoundsException ee) {
                     }
 
-                    house.setId(collectStringNumber(url));
+                    house.setId(StringUtil.collectStringNumber(url));
                     house.setTitle(title);
                     house.setUrl(url);
                     house.setCommunity(community);
-                    house.setRegion(region);
+                    house.setStreet(street);
+                    //house.setRegion(region);
                     house.setFloor(floor);
                     house.setTotalPrice(Double.valueOf(totolPrice));
                     house.setAveragePrice(Double.valueOf(averagePrice));
@@ -117,15 +119,8 @@ public class HouseProcessor implements PageProcessor {
             String newPage = page.getUrl().toString().substring(0, index) + "pg" + count + "/";
             page.addTargetRequest(newPage);
         }catch (Exception eee){
-            try {
-                EmailService.sendHtmlMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
-                System.out.println("邮件发送成功");
-            } catch (MessagingException e) {
-                System.out.println("邮件发送失败");
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            eee.printStackTrace();
+            EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
         }
     }
 
@@ -133,16 +128,6 @@ public class HouseProcessor implements PageProcessor {
     @Override
     public Site getSite() {
         return site;
-    }
-
-    private String collectStringNumber(String str) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
-            if (str.charAt(i) >= 48 && str.charAt(i) <= 57) {
-                sb.append(str.charAt(i));
-            }
-        }
-        return sb.toString();
     }
 
     public static void main(String[] args){

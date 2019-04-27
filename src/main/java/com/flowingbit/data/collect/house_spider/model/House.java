@@ -21,8 +21,10 @@ public class House {
     private String id;
     private String title;
     private String url;
-    private String community;
+    private String city;
     private String region;
+    private String street;
+    private String community;
     private String floor;
     private Double totalPrice;
     private Double averagePrice;
@@ -61,12 +63,12 @@ public class House {
         this.url = url;
     }
 
-    public String getCommunity() {
-        return community;
+    public String getCity() {
+        return city;
     }
 
-    public void setCommunity(String community) {
-        this.community = community;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getRegion() {
@@ -75,6 +77,22 @@ public class House {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(String community) {
+        this.community = community;
     }
 
     public String getFloor() {
@@ -187,8 +205,10 @@ public class House {
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", url='" + url + '\'' +
-                ", community='" + community + '\'' +
+                ", city='" + city + '\'' +
                 ", region='" + region + '\'' +
+                ", street='" + street + '\'' +
+                ", community='" + community + '\'' +
                 ", floor='" + floor + '\'' +
                 ", totalPrice=" + totalPrice +
                 ", averagePrice=" + averagePrice +

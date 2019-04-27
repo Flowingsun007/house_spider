@@ -65,6 +65,26 @@ public class EmailService {
         mailSender.send(mimeMessage);
     }
 
+    public static void sendMail(String toEmail, String url, String message) {
+        try {
+            String subject = "Lyon's warning of House Spider!";
+            String content = "<html><p>亲爱的：" + toEmail +
+                    ",您的爬虫异常挂掉了请从此<a href=" + url + ">链接</a>重新爬取！</p><p>异常信息：" + message + "</p></html>";
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            // 设置utf-8或GBK编码，否则邮件会有乱码
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            messageHelper.setFrom(EMAILFORM, "稳稳地幸福(Lyon)");
+            messageHelper.setTo(toEmail);
+            messageHelper.setSubject(subject);
+            messageHelper.setText(content,true);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 发送邮件
      *

@@ -32,6 +32,14 @@ public class SpiderService {
         if(cityList==null){
             logger.warn("获取城市列表失败！");
         }
+        cityList.forEach(e->{
+            String name = e.getName();
+            try{
+                runCitySpider(name);
+            }catch (Exception eeee){
+
+            }
+        });
     }
 
     /**
@@ -39,7 +47,7 @@ public class SpiderService {
      */
     public void runCitySpider(String cityName) {
         List<City> cityList = redisDAO.getList("citys");
-        if(cityList==null){
+        if(cityList==null||cityList.size()==0){
             CityProcessor processor = new CityProcessor();
             processor.startProcessor("https://www.lianjia.com/city/");
         }

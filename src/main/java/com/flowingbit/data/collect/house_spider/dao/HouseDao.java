@@ -25,9 +25,10 @@ public class HouseDao {
     }
 
     public int insert(House house) {
+        PreparedStatement ps = null;
         try {
             String sql = "INSERT IGNORE INTO `house_spider`.`house` (`id`, `title`, `url` ,`city`,`region`, `street`,`community`, `floor`, `total_price`, `average_price`, `image`, `watch`, `view`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `elevator`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            ps = conn.prepareStatement(sql);
             ps.setString(1, house.getId());
             ps.setString(2, house.getTitle());
             ps.setString(3, house.getUrl());
@@ -49,12 +50,19 @@ public class HouseDao {
             ps.setString(19, house.getElevator());
             return ps.executeUpdate();
         } catch (SQLException e) {
+            try {
+                if(ps!=null){
+                    ps.close();
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
+            return -1;
         }
-        return -1;
     }
 
-    public void batchInsert(List<House> houseList) {
+    public void batchInsert(List<House> houseList) throws Exception{
         PreparedStatement ps = null;
         String sql = "INSERT IGNORE INTO `house_spider`.`house` (`id`, `title`, `url` ,`city`,`region`, `street`,`community`, `floor`, `total_price`, `average_price`, `image`, `watch`, `view`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `elevator`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         try {
@@ -102,6 +110,7 @@ public class HouseDao {
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
+            throw new Exception("批量插入失败");
         }
 
 

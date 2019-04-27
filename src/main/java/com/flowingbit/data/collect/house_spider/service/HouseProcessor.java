@@ -55,7 +55,6 @@ public class HouseProcessor implements PageProcessor {
             System.out.println("=============process()================");
             //Thread.sleep(500);
             // 部分二：定义如何抽取页面信息，并保存下来
-            count++;
             if (!page.getHtml().xpath("//ul[@class='sellListContent']").match()) {
                 page.setSkip(true);
             } else{
@@ -130,9 +129,16 @@ public class HouseProcessor implements PageProcessor {
                         houseList.add(house);
                     });
                     //将结果存到key：houses中
-                    houseDao.batchInsert(houseList);
+                    try{
+                        houseDao.batchInsert(houseList);
+                    }catch (Exception ee){
+                        houseList.forEach(g->{
+                            houseDao.insert(g);
+                        });
+                    }
                     //page.putField("houses", houseList);
                     // 部分三：从页面发现后续的url地址来抓取
+                    count++;
                     int index = page.getUrl().toString().indexOf("pg");
                     String newPage = page.getUrl().toString().substring(0, index) + "pg" + count + "/";
                     System.out.println("new page: "+newPage);

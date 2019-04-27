@@ -1,8 +1,8 @@
 package com.flowingbit.data.collect.house_spider.model;
 
-import java.util.*;
+import java.io.Serializable;
 
-public class Region {
+public class Region implements Serializable {
     /**
      * 名称
      */
@@ -10,7 +10,7 @@ public class Region {
     /**
      * 英文名称
      */
-    private String enName;
+    private String briefName;
 
     public String getName() {
         return name;
@@ -20,11 +20,19 @@ public class Region {
         this.name = name;
     }
 
-    public String getEnName() {
-        return enName;
+    public String getBriefName() {
+        return briefName;
     }
 
-    public void setEnName(String enName) {
-        this.enName = enName;
+    public void setBriefName(String briefName) {
+        this.briefName = briefName;
+    }
+
+    @Override
+    public String toString() {
+        return "Region{" +
+                "name='" + name + '\'' +
+                ", briefName='" + briefName + '\'' +
+                '}';
     }
 }

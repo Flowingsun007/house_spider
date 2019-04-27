@@ -130,14 +130,26 @@ public class HouseProcessor implements PageProcessor {
         return site;
     }
 
-    public static void main(String[] args){
+    public void startProcessor(String url){
         Spider.create(new HouseProcessor())
                 //从"https://github.com/code4craft"开始抓
-                .addUrl("https://nj.lianjia.com/ershoufang/pg1")
+                .addUrl(url)
                 //开启2个线程抓取
                 .thread(2)
                 //启动爬虫
                 .run();
     }
+
+    public static void main(String[] args){
+    }
+//    public static void main(String[] args){
+//        Spider.create(new HouseProcessor())
+//                //从"https://github.com/code4craft"开始抓
+//                .addUrl("https://nj.lianjia.com/ershoufang/pg1")
+//                //开启2个线程抓取
+//                .thread(2)
+//                //启动爬虫
+//                .run();
+//    }
 
 }

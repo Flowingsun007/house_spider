@@ -2,11 +2,14 @@ package com.flowingbit.data.collect.house_spider.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.flowingbit.data.collect.house_spider.dao.RedisDAO;
 import com.flowingbit.data.collect.house_spider.model.City;
+import com.flowingbit.data.collect.house_spider.model.Region;
 import com.flowingbit.data.collect.house_spider.service.email.EmailService;
 import com.flowingbit.data.collect.house_spider.utils.IOUtil;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -17,8 +20,15 @@ import us.codecraft.webmagic.selector.Selectable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class CityProcessor implements PageProcessor {
+
+    private List<City> cityList;
+
+    RedisDAO redisDAO = new RedisDAO();
+
+    public CityProcessor(){
+        this.cityList = new ArrayList<>();
+    }
 
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me()
@@ -43,7 +53,6 @@ public class CityProcessor implements PageProcessor {
             //将html输出到文件
             // C:/Users/flowi/Desktop/lianjia.html
             //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
-            List<City> cityList = new ArrayList<>();
             //开始提取页面信息
             System.out.println(page.getUrl().toString());
             List<Selectable> provinces = page.getHtml().xpath("//div[@class='city_province']").nodes();
@@ -56,12 +65,14 @@ public class CityProcessor implements PageProcessor {
                     String cityName = f.xpath("//a/text()").toString();
                     String cityUrl = f.xpath("//a/@href").toString();
                     city.setName(cityName);
-                    city.setEnName(StringUtils.substringBetween(cityUrl, "https://","."));
+                    city.setBriefName(StringUtils.substringBetween(cityUrl, "https://","."));
                     System.out.println("  |——城市："+cityName + " " + cityUrl);
                     cityList.add(city);
                 });
 
             });
+            //存到redis
+            redisDAO.setList("citys", cityList);
             //存成json文件
             String jsonstr = JSONArray.toJSONString(cityList);
             IOUtil.outFile(jsonstr, "citys.json");
@@ -77,15 +88,24 @@ public class CityProcessor implements PageProcessor {
         return site;
     }
 
-
-    public static void main(String[] args){
+    public void startProcessor(String url){
         Spider.create(new CityProcessor())
-                //从"https://www.lianjia.com/city/"开始抓
-                .addUrl("https://www.lianjia.com/city/")
+                //从"https://github.com/code4craft"开始抓
+                .addUrl(url)
                 //开启2个线程抓取
-                .thread(1)
+                .thread(2)
                 //启动爬虫
                 .run();
     }
+
+//    public static void main(String[] args){
+//        Spider.create(new CityProcessor())
+//                //从"https://www.lianjia.com/city/"开始抓
+//                .addUrl("https://www.lianjia.com/city/")
+//                //开启2个线程抓取
+//                .thread(1)
+//                //启动爬虫
+//                .run();
+//    }
 
 }

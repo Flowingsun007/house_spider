@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
@@ -15,7 +16,7 @@ import java.util.UUID;
  **/
 @Entity
 @Table(name="house")
-public class House {
+public class House implements Serializable {
     @Id
     @Column
     private String id;

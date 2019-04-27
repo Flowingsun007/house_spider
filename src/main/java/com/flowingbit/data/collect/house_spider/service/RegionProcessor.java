@@ -1,5 +1,6 @@
 package com.flowingbit.data.collect.house_spider.service;
 
+import com.flowingbit.data.collect.house_spider.dao.RedisDAO;
 import com.flowingbit.data.collect.house_spider.model.City;
 import com.flowingbit.data.collect.house_spider.model.Region;
 import com.flowingbit.data.collect.house_spider.service.email.EmailService;
@@ -16,8 +17,23 @@ import us.codecraft.webmagic.selector.Selectable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class RegionProcessor implements PageProcessor {
+
+    private List<Region> regionList;
+
+    private String name;
+
+    private String briefName;
+
+    public RegionProcessor(){}
+
+    public RegionProcessor(String name,  String briefName){
+        this.regionList = new ArrayList<>();
+        this.name = name;
+        this.briefName = briefName;
+    }
+
+    RedisDAO redisDAO = new RedisDAO();
 
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me()
@@ -42,7 +58,6 @@ public class RegionProcessor implements PageProcessor {
             //将html输出到文件
             // C:/Users/flowi/Desktop/lianjia.html
             //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
-            List<Region> regionList = new ArrayList<>();
             //开始提取页面信息
             System.out.println(page.getUrl().toString());
             List<Selectable> regions = page.getHtml().xpath("//div[@data-role='ershoufang']/div[1]/a").nodes();
@@ -51,11 +66,13 @@ public class RegionProcessor implements PageProcessor {
                 String regionName = e.xpath("a/text()").toString();
                 String regionUrl = e.xpath("a/@href").toString();
                 region.setName(regionName);
-                region.setEnName(StringUtils.substringBetween(regionUrl, "/ershoufang/", "/"));
+                region.setBriefName(StringUtils.substringBetween(regionUrl, "/ershoufang/", "/"));
                 System.out.println("区域：" + regionName);
                 System.out.println("  |——链接：" + regionUrl);
                 regionList.add(region);
             });
+            //存redis
+            redisDAO.setList(name, regionList);
             //存成json文件
             String jsonstr = JSONArray.toJSONString(regionList);
             IOUtil.outFile(jsonstr, "regions.json");
@@ -72,15 +89,27 @@ public class RegionProcessor implements PageProcessor {
         return site;
     }
 
-
-    public static void main(String[] args){
-        Spider.create(new RegionProcessor())
-                //从"https://www.lianjia.com/city/"开始抓
-                .addUrl("https://nj.lianjia.com/ershoufang/")
+    public void startProcessor(String url, String name, String briefName){
+        Spider.create(new RegionProcessor(name, briefName))
+                //从"https://nj.lianjia.com/ershoufang/"开始抓
+                .addUrl(url)
                 //开启2个线程抓取
-                .thread(1)
+                .thread(2)
                 //启动爬虫
                 .run();
     }
+
+    public static void main(String[] args){
+    }
+
+//    public static void main(String[] args){
+//        Spider.create(new RegionProcessor())
+//                //从"https://www.lianjia.com/city/"开始抓
+//                .addUrl("https://nj.lianjia.com/ershoufang/")
+//                //开启2个线程抓取
+//                .thread(1)
+//                //启动爬虫
+//                .run();
+//    }
 
 }

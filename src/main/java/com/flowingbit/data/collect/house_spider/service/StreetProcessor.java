@@ -1,5 +1,6 @@
 package com.flowingbit.data.collect.house_spider.service;
 
+import com.flowingbit.data.collect.house_spider.dao.RedisDAO;
 import com.flowingbit.data.collect.house_spider.model.Region;
 import com.flowingbit.data.collect.house_spider.model.Street;
 import com.flowingbit.data.collect.house_spider.service.email.EmailService;
@@ -16,8 +17,23 @@ import us.codecraft.webmagic.selector.Selectable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class StreetProcessor implements PageProcessor {
+
+    private List<Street> streetList = new ArrayList<>();
+
+    private String name;
+
+    private String briefName;
+
+    public StreetProcessor(){}
+
+    public StreetProcessor(String name,  String briefName){
+        this.streetList = new ArrayList<>();
+        this.name = name;
+        this.briefName = briefName;
+    }
+
+    RedisDAO redisDAO = new RedisDAO();
 
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me()
@@ -42,7 +58,6 @@ public class StreetProcessor implements PageProcessor {
             //将html输出到文件
             // C:/Users/flowi/Desktop/lianjia.html
             //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
-            List<Street> streetList = new ArrayList<>();
             //开始提取页面信息
             System.out.println(page.getUrl().toString());
             List<Selectable> streets = page.getHtml().xpath("//div[@data-role='ershoufang']/div[2]/a").nodes();
@@ -56,6 +71,8 @@ public class StreetProcessor implements PageProcessor {
                 System.out.println("  |——链接：" + streetUrl);
                 streetList.add(street);
             });
+            //存redis
+            redisDAO.setList(name, streetList);
             //存成json文件
             String jsonstr = JSONArray.toJSONString(streetList);
             IOUtil.outFile(jsonstr, "streets.json");
@@ -72,15 +89,27 @@ public class StreetProcessor implements PageProcessor {
         return site;
     }
 
-
-    public static void main(String[] args){
-        Spider.create(new StreetProcessor())
-                //从"https://www.lianjia.com/city/"开始抓
-                .addUrl("https://nj.lianjia.com/ershoufang/jianye/")
+    public void startProcessor(String url, String name, String briefName){
+        Spider.create(new StreetProcessor(name, briefName))
+                //从"https://nj.lianjia.com/ershoufang/"开始抓
+                .addUrl(url)
                 //开启2个线程抓取
-                .thread(1)
+                .thread(2)
                 //启动爬虫
                 .run();
     }
+
+    public static void main(String[] args){
+    }
+
+//    public static void main(String[] args){
+//        Spider.create(new StreetProcessor())
+//                //从"https://nj.lianjia.com/ershoufang/jianye/"开始抓
+//                .addUrl("https://nj.lianjia.com/ershoufang/jianye/")
+//                //开启2个线程抓取
+//                .thread(1)
+//                //启动爬虫
+//                .run();
+//    }
 
 }

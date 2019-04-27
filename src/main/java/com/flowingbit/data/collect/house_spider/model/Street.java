@@ -1,8 +1,9 @@
 package com.flowingbit.data.collect.house_spider.model;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Street {
+public class Street implements Serializable {
     /**
      * 名称
      */

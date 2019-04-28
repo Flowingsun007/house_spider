@@ -3,8 +3,12 @@ package com.flowingbit.data.collect.house_spider.service;
 import com.flowingbit.data.collect.house_spider.dao.HouseDao;
 import com.flowingbit.data.collect.house_spider.model.House;
 import com.flowingbit.data.collect.house_spider.service.email.EmailService;
+import com.flowingbit.data.collect.house_spider.utils.IOUtil;
 import com.flowingbit.data.collect.house_spider.utils.StringUtil;
+import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -26,6 +30,8 @@ public class HouseProcessor implements PageProcessor {
     private String region;
 
     private int count;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public HouseProcessor(){}
 
@@ -71,83 +77,89 @@ public class HouseProcessor implements PageProcessor {
                     System.out.println(page.getUrl().toString());
                     List<Selectable> targets = page.getHtml().xpath("//li[@class='clear LOGCLICKDATA']").nodes();
                     targets.forEach(e -> {
-                        House house = new House();
-                        String title = e.xpath("//div[@class='title']/a[1]/text()").toString();
-                        String url = e.xpath("//a[@class='noresultRecommend img ']/@href").toString();
-                        String image = null;
-                        if(e.xpath("//img[@class='lj-lazy']/@data-original").match()){
-                            image = e.xpath("//img[@class='lj-lazy']/@data-original").toString();
+                        try{
+                            House house = new House();
+                            String title = e.xpath("//div[@class='title']/a[1]/text()").toString();
+                            String url = e.xpath("//a[@class='noresultRecommend img ']/@href").toString();
+                            String image = null;
+                            if(e.xpath("//img[@class='lj-lazy']/@data-original").match()){
+                                image = e.xpath("//img[@class='lj-lazy']/@data-original").toString();
+                            }
+                            String s = e.xpath("//div[@class='houseInfo']/text()").toString();
+                            String community = e.xpath("//div[@class='houseInfo']/a/text()").toString();
+                            String floor = e.xpath("//div[@class='positionInfo']/text()").toString();
+                            String street = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
+                            String totolPrice = e.xpath("//div[@class='totalPrice']/span[1]/text()").toString();
+                            String averagePrice = StringUtils.strip(StringUtils.strip(e.xpath("//div[@class='unitPrice']/span[1]/text()").toString(), "单价"), "元/平米");
+                            String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
+                            String[] sl = followInfo.split("/");
+                            String watch = StringUtil.collectStringNumber(sl[0]);
+                            String view = StringUtil.collectStringNumber(sl[1]);
+                            String releaseDate = sl[2];
+                            String ss = StringUtils.strip(s.strip(), "|").strip();
+                            String[] houseInfo = StringUtils.split(ss, "|");
+                            String roomCount = houseInfo[0].strip();
+                            Double houseArea = Double.valueOf(houseInfo[1].strip().split("平米")[0]);
+                            String towards = houseInfo[2].strip();
+                            String decoration = houseInfo[3].strip();
+                            String elevator = houseInfo[4].strip();
+                            house.setId(StringUtil.collectStringNumber(url));
+                            house.setTitle(title);
+                            house.setUrl(url);
+                            house.setCommunity(community);
+                            house.setStreet(street);
+                            house.setRegion(region);
+                            house.setCity(city);
+                            house.setFloor(floor);
+                            house.setTotalPrice(Double.valueOf(totolPrice));
+                            house.setAveragePrice(Double.valueOf(averagePrice));
+                            house.setImage(image);
+                            house.setWatch(Integer.valueOf(watch));
+                            house.setView(Integer.valueOf(view));
+                            house.setReleaseDate(releaseDate);
+                            house.setRoomCount(roomCount);
+                            house.setHouseArea(houseArea);
+                            house.setTowards(towards);
+                            house.setDecoration(decoration);
+                            house.setElevator(elevator);
+                            System.out.println(house.toString());
+                            //houseDao.insert(house);
+                            houseList.add(house);
+                            //将结果存到key：houses中
+                            try{
+                                houseDao.batchInsert(houseList);
+                            }catch (Exception ee){
+                                houseList.forEach(g->{
+                                    houseDao.insert(g);
+                                });
+                                logger.error("Function process() >> targets.forEach() >> houseDao.batchInsert() Exception,details:",ee);
+                                //将houseList存到文件
+                                //存成json文件
+                                String jsonstr = JSONArray.toJSONString(houseList);
+                                IOUtil.outFile(jsonstr, "houseList_" + page.getUrl() + ".json");
+                                //发送邮件
+                                EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), jsonstr);
+                            }
+                            //page.putField("houses", houseList);
+                            // 部分三：从页面发现后续的url地址来抓取
+                            count++;
+                            int index = page.getUrl().toString().indexOf("pg");
+                            String newPage = page.getUrl().toString().substring(0, index) + "pg" + count + "/";
+                            System.out.println("new page: "+newPage);
+                            page.addTargetRequest(newPage);
+                        }catch (Exception e1){
+                            logger.error("Function process() >> targets.forEach() Exception,details:",e1);
+                            try{
+                                //将当前页存到文件
+                                IOUtil.outFile(e1.getMessage(),page.getUrl() + ".html");
+                            }catch (Exception eeee){}
                         }
-                        String s = e.xpath("//div[@class='houseInfo']/text()").toString();
-                        String community = e.xpath("//div[@class='houseInfo']/a/text()").toString();
-                        String floor = e.xpath("//div[@class='positionInfo']/text()").toString();
-                        String street = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
-                        String totolPrice = e.xpath("//div[@class='totalPrice']/span[1]/text()").toString();
-                        String averagePrice = StringUtils.strip(StringUtils.strip(e.xpath("//div[@class='unitPrice']/span[1]/text()").toString(), "单价"), "元/平米");
-                        String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
-                        String[] sl = followInfo.split("/");
-                        String watch = StringUtil.collectStringNumber(sl[0]);
-                        String view = StringUtil.collectStringNumber(sl[1]);
-                        String releaseDate = sl[2];
-                        String ss = StringUtils.strip(s.strip(), "|").strip();
-                        String[] houseInfo = StringUtils.split(ss, "|");
-                        String roomCount = houseInfo[0].strip();
-                        Double houseArea = null;
-                        try {
-                            houseArea = Double.valueOf(houseInfo[1].strip().split("平米")[0]);
-                        } catch (NumberFormatException nn) {
-                        }
-                        String towards = houseInfo[2].strip();
-                        String decoration = houseInfo[3].strip();
-                        String elevator = "";
-                        try {
-                            elevator = houseInfo[4].strip();
-                        } catch (ArrayIndexOutOfBoundsException ee) {
-                        }
-
-                        house.setId(StringUtil.collectStringNumber(url));
-                        house.setTitle(title);
-                        house.setUrl(url);
-                        house.setCommunity(community);
-                        house.setStreet(street);
-                        house.setRegion(region);
-                        house.setCity(city);
-                        house.setFloor(floor);
-                        house.setTotalPrice(Double.valueOf(totolPrice));
-                        house.setAveragePrice(Double.valueOf(averagePrice));
-                        house.setImage(image);
-                        house.setWatch(Integer.valueOf(watch));
-                        house.setView(Integer.valueOf(view));
-                        house.setReleaseDate(releaseDate);
-                        house.setRoomCount(roomCount);
-                        house.setHouseArea(houseArea);
-                        house.setTowards(towards);
-                        house.setDecoration(decoration);
-                        house.setElevator(elevator);
-                        System.out.println(house.toString());
-                        //houseDao.insert(house);
-                        houseList.add(house);
                     });
-                    //将结果存到key：houses中
-                    try{
-                        houseDao.batchInsert(houseList);
-                    }catch (Exception ee){
-                        houseList.forEach(g->{
-                            houseDao.insert(g);
-                        });
-                    }
-                    //page.putField("houses", houseList);
-                    // 部分三：从页面发现后续的url地址来抓取
-                    count++;
-                    int index = page.getUrl().toString().indexOf("pg");
-                    String newPage = page.getUrl().toString().substring(0, index) + "pg" + count + "/";
-                    System.out.println("new page: "+newPage);
-                    page.addTargetRequest(newPage);
                 }
             }
-        }catch (Exception eee){
-            eee.printStackTrace();
-            EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
+        } catch (Exception eee){
+            logger.error("Function process() Exception,details:",eee);
+            EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), "Function process() Exception,details:" + eee.getMessage());
         }
     }
 

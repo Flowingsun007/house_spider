@@ -148,7 +148,7 @@ public class HouseProcessor implements PageProcessor {
                         //将houseList存到文件
                         //存成json文件
                         String jsonstr = JSONArray.toJSONString(houseList);
-                        IOUtil.outFile(jsonstr, "houseList_" + page.getUrl() + ".json");
+                        IOUtil.outFile(jsonstr, "houseList_" + city + region + ".json");
                         //发送邮件
                         EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), jsonstr);
                     }

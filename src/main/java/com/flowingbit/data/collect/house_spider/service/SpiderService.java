@@ -43,6 +43,30 @@ public class SpiderService {
     }
 
     /**
+     * 爬取全国的链家二手房
+     */
+    public void runNationSpider(List<String> cityNames){
+        CityProcessor processor = new CityProcessor();
+        processor.startProcessor("https://www.lianjia.com/city/");
+        List<City> cityList = redisDAO.getList("citys");
+        if(cityList==null){
+            logger.warn("获取城市列表失败！");
+        }
+        cityList.forEach(e->{
+            String name = e.getName();
+            if(!cityNames.contains(name)){
+                try{
+                    runCitySpider(name);
+                }catch (Exception eeee){
+
+                }
+            }else {
+                logger.info("不爬取该城市：" + name);
+            }
+        });
+    }
+
+    /**
      * 爬取指定城市的二手房
      */
     public void runCitySpider(String cityName) {

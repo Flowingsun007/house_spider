@@ -5,6 +5,8 @@ import com.flowingbit.data.collect.house_spider.service.SpiderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/house")
 public class SpiderController {
@@ -21,6 +23,14 @@ public class SpiderController {
     @GetMapping(path = "/nation")
     public void runNationSpider(){
         spiderService.runNationSpider();
+    }
+
+    /**
+     * 爬取全国的链家二手房(排除指定城市)
+     */
+    @PostMapping(path = "/nation/exclude")
+    public void runNationSpiderExclude(@RequestBody List<String> cityNames){
+        spiderService.runNationSpider(cityNames);
     }
 
     /**

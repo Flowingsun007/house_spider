@@ -1,5 +1,6 @@
 package com.flowingbit.data.collect.house_spider.service;
 
+import com.alibaba.fastjson.JSON;
 import com.flowingbit.data.collect.house_spider.dao.RedisDAO;
 import com.flowingbit.data.collect.house_spider.model.Region;
 import com.flowingbit.data.collect.house_spider.model.Street;
@@ -15,11 +16,13 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StreetProcessor implements PageProcessor {
 
-    private List<Street> streetList = new ArrayList<>();
+    private Set<Street> streetSet;
 
     private String name;
 
@@ -28,7 +31,7 @@ public class StreetProcessor implements PageProcessor {
     public StreetProcessor(){}
 
     public StreetProcessor(String name,  String briefName){
-        this.streetList = new ArrayList<>();
+        this.streetSet = new LinkedHashSet<Street>();
         this.name = name;
         this.briefName = briefName;
     }
@@ -69,12 +72,13 @@ public class StreetProcessor implements PageProcessor {
                 street.setBriefName(StringUtils.substringBetween(streetUrl, "/ershoufang/", "/"));
                 System.out.println("街道：" + streetName);
                 System.out.println("  |——链接：" + streetUrl);
-                streetList.add(street);
+                streetSet.add(street);
             });
             //存redis
-            redisDAO.setList(name, streetList);
+            redisDAO.setSet(name, streetSet);
             //存成json文件
-            String jsonstr = JSONArray.toJSONString(streetList);
+            List<Street> ll = new ArrayList<>(streetSet);
+            String jsonstr = JSONArray.toJSONString(ll);
             IOUtil.outFile(jsonstr, "streets.json");
 
         }catch (Exception eee){

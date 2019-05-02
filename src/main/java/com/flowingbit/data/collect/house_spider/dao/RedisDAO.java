@@ -9,6 +9,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.List;
+import java.util.Set;
 
 public class RedisDAO {
 
@@ -29,6 +30,33 @@ public class RedisDAO {
     }
 
 
+    public <T> boolean setSet(String key , Set<T> set){
+        Jedis jedis = jedisPool.getResource();
+        try {
+            byte[] listInfo = SerializeUtil.serialize(set);
+            jedis.set(key.getBytes(), listInfo);
+            return true;
+        } catch (Exception e) {
+            logger.error("Set key error : "+e);
+        } finally {
+            jedis.close();
+        }
+        return false;
+    }
+
+    public <T> Set<T> getSet(String key){
+        Set<T> set = null;
+        Jedis jedis = jedisPool.getResource();
+        try {
+            byte[] in = jedis.get(key.getBytes());
+            set = (Set<T>) SerializeUtil.unserialize(in);
+        } catch (Exception e) {
+            logger.error("Set key error : "+e);
+        } finally {
+            jedis.close();
+        }
+        return set;
+    }
 
     public <T> String setList(String key , List<T> list){
         String result="setList_fail";

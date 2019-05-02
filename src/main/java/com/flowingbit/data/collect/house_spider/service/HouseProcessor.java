@@ -133,7 +133,7 @@ public class HouseProcessor implements PageProcessor {
                             houseList.add(house);
                             //将结果存到key：houses中
                         } catch (Exception ex) {
-                            EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), ex.getMessage() + "\n>>>>" + e.toString());
+                            //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), ex.getMessage() + "\n>>>>" + e.toString());
                             logger.error("Function process() >> targets.forEach() Exception,details:",ex);
                         }
                     });
@@ -150,7 +150,7 @@ public class HouseProcessor implements PageProcessor {
                         String jsonstr = JSONArray.toJSONString(houseList);
                         IOUtil.outFile(jsonstr, "houseList_" + city + region + ".json");
                         //发送邮件
-                        EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), jsonstr);
+                        //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), jsonstr);
                     }
                     //page.putField("houses", houseList);
                     // 部分三：从页面发现后续的url地址来抓取
@@ -165,7 +165,7 @@ public class HouseProcessor implements PageProcessor {
             }
         } catch (Exception eee){
             logger.error("Function process() Exception,details:",eee);
-            EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), "Function process() Exception,details:" + eee.getMessage());
+            //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), "Function process() Exception,details:" + eee.getMessage());
         }
     }
 

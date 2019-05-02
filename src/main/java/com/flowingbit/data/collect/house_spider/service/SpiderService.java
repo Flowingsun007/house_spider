@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SpiderService {
@@ -76,7 +77,7 @@ public class SpiderService {
             processor.startProcessor("https://www.lianjia.com/city/");
         }
         //获取该城市所有行政区域，如cityName = 南京，区域：鼓楼、玄武、江宁、雨花、浦口...
-        City city = cityList.parallelStream().filter(e->e.getName().equals(cityName)).findFirst().orElseThrow(()->new NullPointerException("没找到此城市名"));
+        City city = cityList.parallelStream().filter(e->e.getName().equals(cityName)).findAny().orElseThrow(()->new NullPointerException("没找到此城市名"));
         RegionProcessor processor = new RegionProcessor();
         String url = "https://" + city.getBriefName() + ".lianjia.com/ershoufang/";
         processor.startProcessor(url, city.getName(), city.getBriefName());
@@ -91,11 +92,12 @@ public class SpiderService {
             String regionUrl = str + f.getBriefName();
             StreetProcessor streetProcessor = new StreetProcessor();
             streetProcessor.startProcessor(regionUrl, f.getName(), f.getBriefName());
-            List<Street> streetList = redisDAO.getList(f.getName());
-            if(streetList==null){
+            // 此处用Set而不用List的原因：有部分部分行政区域下存在相同的街道，导致重复爬取
+            Set<Street> streetSet = redisDAO.getSet(f.getName());
+            if(streetSet==null){
                 logger.warn("没找到该行政区域下的街道");
             }else{
-                streetList.stream().forEach(g->{
+                streetSet.stream().forEach(g->{
                     String streetUrl = str + g.getBriefName() + "/pg1";
                     HouseProcessor houseProcessor = new HouseProcessor();
                     houseProcessor.startProcessor(streetUrl, cityName, f.getName());

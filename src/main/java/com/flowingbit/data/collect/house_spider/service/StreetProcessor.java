@@ -28,10 +28,13 @@ public class StreetProcessor implements PageProcessor {
 
     private String briefName;
 
+    private String cityName;
+
     public StreetProcessor(){}
 
-    public StreetProcessor(String name,  String briefName){
+    public StreetProcessor(String cityName, String name,  String briefName){
         this.streetSet = new LinkedHashSet<Street>();
+        this.cityName = cityName;
         this.name = name;
         this.briefName = briefName;
     }
@@ -58,24 +61,32 @@ public class StreetProcessor implements PageProcessor {
             if (!page.getHtml().xpath("//div[@data-role='ershoufang']").match()){
                 page.setSkip(true);
             }
+            List<String> cityStreeNames = redisDAO.getList(cityName + ":all:all");
             //将html输出到文件
             // C:/Users/flowi/Desktop/lianjia.html
             //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
             //开始提取页面信息
             System.out.println(page.getUrl().toString());
             List<Selectable> streets = page.getHtml().xpath("//div[@data-role='ershoufang']/div[2]/a").nodes();
+            System.out.println("行政区域：" + name);
             streets.forEach(e -> {
                 Street street = new Street();
                 String streetName = e.xpath("a/text()").toString();
                 String streetUrl = e.xpath("a/@href").toString();
                 street.setName(streetName);
                 street.setBriefName(StringUtils.substringBetween(streetUrl, "/ershoufang/", "/"));
-                System.out.println("街道：" + streetName);
-                System.out.println("  |——链接：" + streetUrl);
-                streetSet.add(street);
+                if(!cityStreeNames.contains(streetName)){
+                    cityStreeNames.add(streetName);
+                    streetSet.add(street);
+                    System.out.println("街道：" + streetName);
+                    System.out.println("  |——链接：" + streetUrl);
+                }else {
+                    System.out.println("====================街道已存在：=======================" + street.toString());
+                }
             });
             //存redis
-            redisDAO.setSet(name, streetSet);
+            redisDAO.setSet(cityName + ":" + name, streetSet);
+            redisDAO.setList(cityName + ":all:all", cityStreeNames);
             //存成json文件
             List<Street> ll = new ArrayList<>(streetSet);
             String jsonstr = JSONArray.toJSONString(ll);
@@ -93,8 +104,8 @@ public class StreetProcessor implements PageProcessor {
         return site;
     }
 
-    public void startProcessor(String url, String name, String briefName){
-        Spider.create(new StreetProcessor(name, briefName))
+    public void startProcessor(String url, String cityName, String name, String briefName){
+        Spider.create(new StreetProcessor(cityName, name, briefName))
                 //从"https://nj.lianjia.com/ershoufang/"开始抓
                 .addUrl(url)
                 //开启2个线程抓取

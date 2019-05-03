@@ -1,24 +1,14 @@
 package com.flowingbit.data.collect.house_spider.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.UUID;
 
+import java.io.Serializable;
+import java.util.Date;
 /**
  * @author Lyon
  * @date 2019/4/25 18:42
  * @description House
  **/
-@Entity
-@Table(name="house")
 public class House implements Serializable {
-    @Id
-    @Column
     private String id;
     private String title;
     private String url;

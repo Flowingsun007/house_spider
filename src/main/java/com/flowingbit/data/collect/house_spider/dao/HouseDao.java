@@ -8,13 +8,13 @@ import java.util.List;
 public class HouseDao {
     private Connection conn = null;
     private Statement stmt = null;
+    private static final String DRIVER = "com.mysql.jdbc.Driver";
+    private static final String URL = "jdbc:mysql://47.110.50.248:3306/house_spider?"  + "user=root&password=mysql920726zly&useUnicode=true&characterEncoding=UTF8";
 
     public HouseDao() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://47.110.50.248:3306/house_spider?"
-                    + "user=root&password=mysql920726zly&useUnicode=true&characterEncoding=UTF8";
-            conn = DriverManager.getConnection(url);
+            Class.forName(DRIVER);
+            conn = DriverManager.getConnection(URL);
             stmt = conn.createStatement();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -67,6 +67,9 @@ public class HouseDao {
         String sql = "INSERT IGNORE INTO `house_spider`.`house` (`id`, `title`, `url` ,`city`,`region`, `street`,`community`, `floor`, `total_price`, `average_price`, `image`, `watch`, `view`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `elevator`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         try {
             //优化插入第一步       设置手动提交
+            if(conn.isClosed()){
+                conn = DriverManager.getConnection(URL);
+            }
             ps = conn.prepareStatement(sql);
             conn.setAutoCommit(false);
             int len = houseList.size();
@@ -94,9 +97,11 @@ public class HouseDao {
                 //批量添加sql，并执行
                 ps.addBatch();
                 if(i==len-1){
+                    System.out.println("=================ps.executeBatch() starting.....==============");
                     ps.executeBatch();
                     conn.commit();
                     ps.clearBatch();
+                    System.out.println("=================ps.executeBatch() finished.....==============");
                 }
             }
             ps.close();

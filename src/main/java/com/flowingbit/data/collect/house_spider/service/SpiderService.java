@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -85,15 +87,18 @@ public class SpiderService {
         if(regionList==null){
             throw new NullPointerException("没找到该城市下的行政区域");
         }
+
+        List<String> cityStreeNames = new ArrayList<>();
+        redisDAO.setList(cityName+":all:all", cityStreeNames);
         //根据区域名获取该区域下所有街道
         String str = "https://" + city.getBriefName() + ".lianjia.com/ershoufang/";
         regionList.forEach(System.out::println);
         regionList.stream().forEach(f->{
             String regionUrl = str + f.getBriefName();
             StreetProcessor streetProcessor = new StreetProcessor();
-            streetProcessor.startProcessor(regionUrl, f.getName(), f.getBriefName());
+            streetProcessor.startProcessor(regionUrl, cityName, f.getName(), f.getBriefName());
             // 此处用Set而不用List的原因：有部分部分行政区域下存在相同的街道，导致重复爬取
-            Set<Street> streetSet = redisDAO.getSet(f.getName());
+            Set<Street> streetSet = redisDAO.getSet(cityName + ":" + f.getName());
             if(streetSet==null){
                 logger.warn("没找到该行政区域下的街道");
             }else{

@@ -108,8 +108,8 @@ public class StreetProcessor implements PageProcessor {
         Spider.create(new StreetProcessor(cityName, name, briefName))
                 //从"https://nj.lianjia.com/ershoufang/"开始抓
                 .addUrl(url)
-                //开启2个线程抓取
-                .thread(2)
+                //开启1个线程抓取
+                .thread(1)
                 //启动爬虫
                 .run();
     }

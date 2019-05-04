@@ -104,8 +104,8 @@ public class SpiderService {
             }else{
                 streetSet.stream().forEach(g->{
                     String streetUrl = str + g.getBriefName() + "/pg1";
-                    HouseProcessor houseProcessor = new HouseProcessor();
-                    houseProcessor.startProcessor(streetUrl, cityName, f.getName());
+                    //HouseProcessor houseProcessor = new HouseProcessor();
+                    //houseProcessor.startProcessor(streetUrl, cityName, f.getName());
                 });
             }
         });

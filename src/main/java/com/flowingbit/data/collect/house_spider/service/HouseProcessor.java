@@ -46,7 +46,7 @@ public class HouseProcessor implements PageProcessor {
     // 部分一：抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me()
             .setRetryTimes(3)
-            .setSleepTime(1000)
+            .setSleepTime(500)
             .addHeader("Accept-Encoding", "gzip, deflate, br")
             .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
             .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3")
@@ -67,7 +67,7 @@ public class HouseProcessor implements PageProcessor {
                 int total = Integer.valueOf(page.getHtml().xpath("//div[@class='resultDes clear']/h2/span/text()").toString().strip());
                 int totalPage = total/30 + 1;
                 System.out.println("================总页数：" + totalPage + "当前页：" + count + "=================");
-                if(count<totalPage){
+                if((count<totalPage) && (count<=100)){
                     count++;
                     //将html输出到文件
                     // C:/Users/flowi/Desktop/lianjia.html

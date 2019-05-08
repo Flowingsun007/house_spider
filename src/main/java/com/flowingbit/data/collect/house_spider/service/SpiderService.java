@@ -23,53 +23,6 @@ public class SpiderService {
     private  Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * 爬取全国的链家二手房
-     */
-    public void runNationSpider(){
-        //HouseProcessor processor = new HouseProcessor();
-        //processor.startProcessor("https://nj.lianjia.com/ershoufang/pg1");
-
-        CityProcessor processor = new CityProcessor();
-        processor.startProcessor("https://www.lianjia.com/city/");
-        List<City> cityList = redisDAO.getList("citys");
-        if(cityList==null){
-            logger.warn("获取城市列表失败！");
-        }
-        cityList.forEach(e->{
-            String name = e.getName();
-            try{
-                runCitySpider(name);
-            }catch (Exception eeee){
-
-            }
-        });
-    }
-
-    /**
-     * 爬取全国的链家二手房
-     */
-    public void runNationSpider(List<String> cityNames){
-        CityProcessor processor = new CityProcessor();
-        processor.startProcessor("https://www.lianjia.com/city/");
-        List<City> cityList = redisDAO.getList("citys");
-        if(cityList==null){
-            logger.warn("获取城市列表失败！");
-        }
-        cityList.forEach(e->{
-            String name = e.getName();
-            if(!cityNames.contains(name)){
-                try{
-                    runCitySpider(name);
-                }catch (Exception eeee){
-
-                }
-            }else {
-                logger.info("不爬取该城市：" + name);
-            }
-        });
-    }
-
-    /**
      * 爬取指定城市的二手房
      */
     public void runCitySpider(String cityName) {
@@ -112,5 +65,58 @@ public class SpiderService {
 
 
 
+    }
+
+    /**
+     * 爬取批量城市的链家二手房
+     */
+    public void runCitysSpider(List<String> cityNames) {
+        cityNames.stream().forEach(e->{
+            runCitySpider(e);
+        });
+    }
+
+    /**
+     * 爬取全国的链家二手房
+     */
+    public void runNationSpider(){
+        CityProcessor processor = new CityProcessor();
+        processor.startProcessor("https://www.lianjia.com/city/");
+        List<City> cityList = redisDAO.getList("citys");
+        if(cityList==null){
+            logger.warn("获取城市列表失败！");
+        }
+        cityList.forEach(e->{
+            String name = e.getName();
+            try{
+                runCitySpider(name);
+            }catch (Exception e1){
+                logger.error("爬取城市：" + name + "发生异常：",e1);
+            }
+        });
+    }
+
+    /**
+     * 爬取全国的链家二手房
+     */
+    public void runNationSpider(List<String> cityNames){
+        CityProcessor processor = new CityProcessor();
+        processor.startProcessor("https://www.lianjia.com/city/");
+        List<City> cityList = redisDAO.getList("citys");
+        if(cityList==null){
+            logger.warn("获取城市列表失败！");
+        }
+        cityList.forEach(e->{
+            String name = e.getName();
+            if(!cityNames.contains(name)){
+                try{
+                    runCitySpider(name);
+                }catch (Exception e2){
+                    logger.error("爬取城市：" + name + "发生异常：",e2);
+                }
+            }else {
+                logger.info("不爬取该城市：" + name);
+            }
+        });
     }
 }

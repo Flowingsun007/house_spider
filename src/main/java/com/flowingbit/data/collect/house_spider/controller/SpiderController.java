@@ -18,6 +18,22 @@ public class SpiderController {
     HouseProcessor houseProcessor;
 
     /**
+     * 爬取指定城市的链家二手房
+     */
+    @PostMapping(path = "/city")
+    public void runCitySpider(String cityName){
+        spiderService.runCitySpider(cityName);
+    }
+
+    /**
+     * 爬取批量城市的链家二手房
+     */
+    @PostMapping(path = "/citys")
+    public void runCitysSpider(@RequestBody List<String> cityNames){
+        spiderService.runCitysSpider(cityNames);
+    }
+
+    /**
      * 爬取全国的链家二手房
      */
     @GetMapping(path = "/nation")
@@ -31,13 +47,5 @@ public class SpiderController {
     @PostMapping(path = "/nation/exclude")
     public void runNationSpiderExclude(@RequestBody List<String> cityNames){
         spiderService.runNationSpider(cityNames);
-    }
-
-    /**
-     * 爬取全国的链家二手房
-     */
-    @PostMapping(path = "/city")
-    public void runCitySpider(String cityName){
-        spiderService.runCitySpider(cityName);
     }
 }

@@ -78,7 +78,7 @@ public class CityProcessor implements PageProcessor {
             IOUtil.outFile(jsonstr, "citys.json");
         }catch (Exception eee){
             eee.printStackTrace();
-            EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
+            //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
         }
     }
 

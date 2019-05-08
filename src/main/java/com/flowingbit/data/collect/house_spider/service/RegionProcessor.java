@@ -81,7 +81,7 @@ public class RegionProcessor implements PageProcessor {
 
         }catch (Exception eee){
             eee.printStackTrace();
-            EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
+            //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
         }
     }
 

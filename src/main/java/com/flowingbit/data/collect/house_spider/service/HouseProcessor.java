@@ -71,17 +71,17 @@ public class HouseProcessor implements PageProcessor {
                     count++;
                     //将html输出到文件
                     // C:/Users/flowi/Desktop/lianjia.html
-                    //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
+                    //IOUtil.outFile(page.getHtml().toString(), "C:/Users/EDZ/Desktop/Object-Detection/house-spider/"+count+".html");
 
                     List<House> houseList = new ArrayList<>();
                     //开始提取页面信息
                     System.out.println(page.getUrl().toString());
-                    List<Selectable> targets = page.getHtml().xpath("//li[@class='clear LOGCLICKDATA']").nodes();
+                    List<Selectable> targets = page.getHtml().xpath("//li[@class='clear LOGVIEWDATA LOGCLICKDATA']").nodes();
                     targets.forEach(e -> {
                         try {
                             House house = new House();
                             String title = e.xpath("//div[@class='title']/a[1]/text()").toString();
-                            String url = e.xpath("//a[@class='noresultRecommend img ']/@href").toString();
+                            String url = e.xpath("//a[@class='noresultRecommend img LOGCLICKDATA']/@href").toString();
                             String image = null;
                             if (e.xpath("//img[@class='lj-lazy']/@data-original").match()) {
                                 image = e.xpath("//img[@class='lj-lazy']/@data-original").toString();
@@ -95,8 +95,9 @@ public class HouseProcessor implements PageProcessor {
                             String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
                             String[] sl = followInfo.split("/");
                             String watch = StringUtil.collectStringNumber(sl[0]);
-                            String view = StringUtil.collectStringNumber(sl[1]);
-                            String releaseDate = sl[2];
+                            //现在取消了带看次数
+                            //String view = StringUtil.collectStringNumber(sl[1]);
+                            String releaseDate = sl[1].strip();
                             String ss = StringUtils.strip(s.strip(), "|").strip();
                             String[] houseInfo = StringUtils.split(ss, "|");
                             String roomCount = houseInfo[0].strip();
@@ -121,7 +122,7 @@ public class HouseProcessor implements PageProcessor {
                             house.setAveragePrice(Double.valueOf(averagePrice));
                             house.setImage(image);
                             house.setWatch(Integer.valueOf(watch));
-                            house.setView(Integer.valueOf(view));
+                            //house.setView(Integer.valueOf(view));
                             house.setReleaseDate(releaseDate);
                             house.setRoomCount(roomCount);
                             house.setHouseArea(houseArea);
@@ -137,21 +138,25 @@ public class HouseProcessor implements PageProcessor {
                             logger.error("Function process() >> targets.forEach() Exception,details:",ex);
                         }
                     });
-
-                    try{
-                        houseDao.batchInsert(houseList);
-                    }catch (Exception ee){
-                        houseList.forEach(g->{
-                            houseDao.insert(g);
-                        });
-                        logger.error("Function process() >> targets.forEach() >> houseDao.batchInsert() Exception,details:",ee);
-                        //将houseList存到文件
-                        //存成json文件
-                        String jsonstr = JSONArray.toJSONString(houseList);
-                        IOUtil.outFile(jsonstr, "houseList_" + city + region + ".json");
-                        //发送邮件
-                        //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), jsonstr);
+                    if(houseList==null||houseList.size()==0){
+                        System.out.println("=============houseList.size()==0 ================");
+                    }else{
+                        try{
+                            houseDao.batchInsert(houseList);
+                        }catch (Exception ee){
+                            houseList.forEach(g->{
+                                houseDao.insert(g);
+                            });
+                            logger.error("Function process() >> targets.forEach() >> houseDao.batchInsert() Exception,details:",ee);
+                            //将houseList存到文件
+                            //存成json文件
+                            //String jsonstr = JSONArray.toJSONString(houseList);
+                            //IOUtil.outFile(jsonstr, "houseList_" + city + region + ".json");
+                            //发送邮件
+                            //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), jsonstr);
+                        }
                     }
+
                     //page.putField("houses", houseList);
                     // 部分三：从页面发现后续的url地址来抓取
                     int index = page.getUrl().toString().indexOf("pg");

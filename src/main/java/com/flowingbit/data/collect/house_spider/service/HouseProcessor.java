@@ -103,9 +103,10 @@ public class HouseProcessor implements PageProcessor {
                             String roomCount = houseInfo[0].strip();
                             Double houseArea = Double.valueOf(houseInfo[1].strip().split("平米")[0]);
                             String towards = houseInfo[2].strip();
-                            String decoration = houseInfo[3].strip();
+                            String decoration = null;
                             String elevator = null;
                             try{
+                                decoration = houseInfo[3].strip();
                                 elevator = houseInfo[4].strip();
                             }catch (ArrayIndexOutOfBoundsException ae){
 

@@ -130,11 +130,13 @@ public class HouseProcessor implements PageProcessor {
                             house.setTowards(towards);
                             house.setDecoration(decoration);
                             house.setElevator(elevator);
-                            System.out.println(house.toString());
+                            //System.out.println(house.toString());
                             //houseDao.insert(house);
                             houseList.add(house);
                             //将结果存到key：houses中
                         } catch (Exception ex) {
+                            String jsonstr = e.xpath("//a[@class='noresultRecommend img LOGCLICKDATA']/@href").toString();
+                            IOUtil.toFile(jsonstr, jsonstr + ".json");
                             //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), ex.getMessage() + "\n>>>>" + e.toString());
                             logger.error("Function process() >> targets.forEach() Exception,details:",ex);
                         }

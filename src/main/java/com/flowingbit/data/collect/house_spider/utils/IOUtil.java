@@ -28,6 +28,25 @@ public class IOUtil{
         } catch (IOException e) {
             throw e;
         }
+    }
 
+    public static void toFile(String s, String filePath){
+        File file = new File(filePath);
+        try (FileOutputStream fop = new FileOutputStream(file)) {
+            // if file doesn't exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            // get the content in bytes
+            byte[] contentInBytes = s.getBytes();
+
+            fop.write(contentInBytes);
+            fop.flush();
+            fop.close();
+            System.out.println("outFile: " + filePath + " success!");
+        } catch (IOException e) {
+            System.out.println("outFile: " + filePath + " fail!");
+            e.printStackTrace();
+        }
     }
 }

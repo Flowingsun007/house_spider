@@ -8,6 +8,7 @@ import com.flowingbit.data.collect.house_spider.model.Street;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,11 +26,15 @@ public class SpiderService {
     /**
      * 爬取指定城市的二手房
      */
+    @Async
     public void runCitySpider(String cityName) {
         List<City> cityList = redisDAO.getList("citys");
         if(cityList==null||cityList.size()==0){
             CityProcessor processor = new CityProcessor();
             processor.startProcessor("https://www.lianjia.com/city/");
+        }
+        if(cityList==null){
+            throw new NullPointerException(">>>>>>>>>>>>>>>>cityList==null<<<<<<<<<<<<<<<<");
         }
         //获取该城市所有行政区域，如cityName = 南京，区域：鼓楼、玄武、江宁、雨花、浦口...
         City city = cityList.parallelStream().filter(e->e.getName().equals(cityName)).findAny().orElseThrow(()->new NullPointerException("没找到此城市名"));

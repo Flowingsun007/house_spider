@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Set;
 
@@ -60,14 +62,19 @@ public class RedisDAO {
 
     public <T> String setList(String key , List<T> list){
         String result="setList_fail";
-        Jedis jedis = jedisPool.getResource();
+        Jedis jedis = null;
         try {
+            jedis = jedisPool.getResource();
             byte[] listInfo = SerializeUtil.serialize(list);
             result = jedis.set(key.getBytes(), listInfo);
+        } catch (JedisConnectionException e1){
+            logger.error("JedisConnectionException, Please check redis server status!");
         } catch (Exception e) {
             logger.error("Set key error : "+e);
         } finally {
-            jedis.close();
+            if(jedis!=null){
+                jedis.close();
+            }
         }
         return result;
     }
@@ -91,14 +98,19 @@ public class RedisDAO {
 
     public <T> List<T> getList(String key){
         List<T> list = null;
-        Jedis jedis = jedisPool.getResource();
+        Jedis jedis = null;
         try {
+            jedis = jedisPool.getResource();
             byte[] in = jedis.get(key.getBytes());
             list = (List<T>) SerializeUtil.unserialize(in);
+        } catch (SocketTimeoutException e1){
+            logger.error("SocketTimeoutException, please check redis server!");
         } catch (Exception e) {
             logger.error("Set key error : "+e);
         } finally {
-            jedis.close();
+            if(jedis!=null){
+                jedis.close();
+            }
         }
         return list;
     }

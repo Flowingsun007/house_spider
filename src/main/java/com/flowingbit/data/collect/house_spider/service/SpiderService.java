@@ -1,18 +1,22 @@
 package com.flowingbit.data.collect.house_spider.service;
 
+import com.flowingbit.data.collect.house_spider.dao.HouseDao;
 import com.flowingbit.data.collect.house_spider.dao.RedisDAO;
 import com.flowingbit.data.collect.house_spider.model.City;
-import com.flowingbit.data.collect.house_spider.model.House;
 import com.flowingbit.data.collect.house_spider.model.Region;
 import com.flowingbit.data.collect.house_spider.model.Street;
+import com.flowingbit.data.collect.house_spider.service.processor.CityProcessor;
+import com.flowingbit.data.collect.house_spider.service.processor.HouseProcessor;
+import com.flowingbit.data.collect.house_spider.service.processor.RegionProcessor;
+import com.flowingbit.data.collect.house_spider.service.processor.StreetProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -24,10 +28,21 @@ public class SpiderService {
     private  Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
+     * 根据城市名称生成数据库表名：
+     * 如 cityName = “南京” tableName = “南京_20191127”
+     */
+    public String generateTableName(String cityName){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String date = sdf.format(new Date());
+        String tableName = cityName + "_" + date;
+        return tableName;
+    }
+
+    /**
      * 爬取指定城市的二手房
      */
     @Async
-    public void runCitySpider(String cityName) {
+    public void runCitySpider(String cityName, String tableName) {
         List<City> cityList = redisDAO.getList("citys");
         if(cityList==null||cityList.size()==0){
             CityProcessor processor = new CityProcessor();
@@ -63,7 +78,7 @@ public class SpiderService {
                 streetSet.stream().forEach(g->{
                     String streetUrl = str + g.getBriefName() + "/pg1";
                     HouseProcessor houseProcessor = new HouseProcessor();
-                    houseProcessor.startProcessor(streetUrl, cityName, f.getName());
+                    houseProcessor.startProcessor(streetUrl, cityName, f.getName(), tableName);
                 });
             }
         });
@@ -72,12 +87,16 @@ public class SpiderService {
 
     }
 
+
     /**
      * 爬取批量城市的链家二手房
      */
     public void runCitysSpider(List<String> cityNames) {
         cityNames.stream().forEach(e->{
-            runCitySpider(e);
+            String tableName = generateTableName(e);
+            if(new HouseDao().createHouseTable(tableName)){
+                runCitySpider(e, tableName);
+            }
         });
     }
 
@@ -85,6 +104,10 @@ public class SpiderService {
      * 爬取全国的链家二手房
      */
     public void runNationSpider(){
+        String tableName = generateTableName("nation");
+        if(!(new HouseDao().createHouseTable(tableName))){
+            return;
+        }
         CityProcessor processor = new CityProcessor();
         processor.startProcessor("https://www.lianjia.com/city/");
         List<City> cityList = redisDAO.getList("citys");
@@ -94,7 +117,7 @@ public class SpiderService {
         cityList.forEach(e->{
             String name = e.getName();
             try{
-                runCitySpider(name);
+                runCitySpider(name, tableName);
             }catch (Exception e1){
                 logger.error("爬取城市：" + name + "发生异常：",e1);
             }
@@ -102,9 +125,13 @@ public class SpiderService {
     }
 
     /**
-     * 爬取全国的链家二手房
+     * 爬取全国的链家二手房(排除指定城市)
      */
     public void runNationSpider(List<String> cityNames){
+        String tableName = generateTableName("nation");
+        if(!(new HouseDao().createHouseTable(tableName))){
+            return;
+        }
         CityProcessor processor = new CityProcessor();
         processor.startProcessor("https://www.lianjia.com/city/");
         List<City> cityList = redisDAO.getList("citys");
@@ -115,7 +142,7 @@ public class SpiderService {
             String name = e.getName();
             if(!cityNames.contains(name)){
                 try{
-                    runCitySpider(name);
+                    runCitySpider(name, tableName);
                 }catch (Exception e2){
                     logger.error("爬取城市：" + name + "发生异常：",e2);
                 }

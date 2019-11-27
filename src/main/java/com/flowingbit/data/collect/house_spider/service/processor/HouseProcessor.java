@@ -1,11 +1,9 @@
-package com.flowingbit.data.collect.house_spider.service;
+package com.flowingbit.data.collect.house_spider.service.processor;
 
 import com.flowingbit.data.collect.house_spider.dao.HouseDao;
 import com.flowingbit.data.collect.house_spider.model.House;
-import com.flowingbit.data.collect.house_spider.service.email.EmailService;
 import com.flowingbit.data.collect.house_spider.utils.IOUtil;
 import com.flowingbit.data.collect.house_spider.utils.StringUtil;
-import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +14,6 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.selector.Selectable;
 
-import javax.mail.MessagingException;
-import java.io.UnsupportedEncodingException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,14 +26,17 @@ public class HouseProcessor implements PageProcessor {
 
     private int count;
 
+    private String tableName;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public HouseProcessor(){}
 
-    public HouseProcessor(String city, String region){
+    public HouseProcessor(String city, String region,String tableName){
         this.city = city;
         this.region = region;
         this.count = 1;
+        this.tableName = tableName;
     }
 
     private static HouseDao houseDao = new HouseDao();
@@ -145,10 +143,10 @@ public class HouseProcessor implements PageProcessor {
                         System.out.println("=============houseList.size()==0 ================");
                     }else{
                         try{
-                            houseDao.batchInsert(houseList);
+                            houseDao.batchInsert(houseList, tableName);
                         }catch (Exception ee){
                             houseList.forEach(g->{
-                                houseDao.insert(g);
+                                houseDao.insert(g, tableName);
                             });
                             logger.error("Function process() >> targets.forEach() >> houseDao.batchInsert() Exception,details:",ee);
                             //将houseList存到文件
@@ -183,8 +181,8 @@ public class HouseProcessor implements PageProcessor {
         return site;
     }
 
-    public void startProcessor(String url, String city, String region){
-        Spider.create(new HouseProcessor(city, region))
+    public void startProcessor(String url, String city, String region, String tableName){
+        Spider.create(new HouseProcessor(city, region, tableName))
                 //从"https://github.com/code4craft"开始抓
                 .addUrl(url)
                 //开启1个线程抓取

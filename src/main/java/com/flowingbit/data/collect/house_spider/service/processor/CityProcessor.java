@@ -1,16 +1,10 @@
-package com.flowingbit.data.collect.house_spider.service;
+package com.flowingbit.data.collect.house_spider.service.processor;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.flowingbit.data.collect.house_spider.dao.RedisDAO;
 import com.flowingbit.data.collect.house_spider.model.City;
-import com.flowingbit.data.collect.house_spider.model.Region;
-import com.flowingbit.data.collect.house_spider.service.email.EmailService;
 import com.flowingbit.data.collect.house_spider.utils.IOUtil;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;

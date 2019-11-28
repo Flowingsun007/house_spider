@@ -7,7 +7,7 @@ Lianjia second house spider链家二手房爬虫~ Springboot + Webmagic + Mysql 
 #### - 由于链家限制爬取页数为100页，所以一个城市下，先查出所有行政区，再遍历行政区下的所有街道，以每个街道为单位，进行最大100页的爬取，这样基本上能爬下城市的所有房源数据。（部分别墅、车位直接忽略没存DB）
 
 ## 使用
-### 基础依赖：安装mysql + redis,并在新建数据库：house
-### a.git clone https://github.com/Flowingsun007/house_spider.git  或下载项目zip包至本地
-### b.修改application.properties和HouseDao.java中的JDBC连接，配置用户名密码为你自己的。
-### c.[POST]http://localhost:8005/house/spider?cityName=南京 即可开启自动爬取和存储。
+#### 基础依赖：安装mysql + redis,并在新建数据库：house
+#### a.git clone https://github.com/Flowingsun007/house_spider.git  或下载项目zip包至本地
+#### b.修改application.properties和HouseDao.java中的JDBC连接，配置用户名密码为你自己的。
+#### c.[POST]http://localhost:8005/house/spider?cityName=南京 即可开启自动爬取和存储。

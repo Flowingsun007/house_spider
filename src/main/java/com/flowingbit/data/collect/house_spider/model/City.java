@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class City implements Serializable {
     /**
-     * 名称
+     * 城市名称
      */
     private String name;
     /**

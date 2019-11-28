@@ -91,6 +91,7 @@ public class SpiderService {
     /**
      * 爬取批量城市的链家二手房
      */
+    @Async
     public void runCitysSpider(List<String> cityNames) {
         cityNames.stream().forEach(e->{
             String tableName = generateTableName(e);
@@ -103,9 +104,11 @@ public class SpiderService {
     /**
      * 爬取全国的链家二手房
      */
+    @Async
     public void runNationSpider(){
         String tableName = generateTableName("nation");
         if(!(new HouseDao().createHouseTable(tableName))){
+            logger.error("runNationSpider() >> 创建nation表失败");
             return;
         }
         CityProcessor processor = new CityProcessor();
@@ -127,9 +130,11 @@ public class SpiderService {
     /**
      * 爬取全国的链家二手房(排除指定城市)
      */
+    @Async
     public void runNationSpider(List<String> cityNames){
         String tableName = generateTableName("nation");
         if(!(new HouseDao().createHouseTable(tableName))){
+            logger.error("runNationSpider() >> 创建nation表失败");
             return;
         }
         CityProcessor processor = new CityProcessor();

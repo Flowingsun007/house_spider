@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Region implements Serializable {
     /**
-     * 名称
+     * 区域名称
      */
     private String name;
     /**

@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Street implements Serializable {
     /**
-     * 名称
+     * 街道名称
      */
     private String name;
     /**

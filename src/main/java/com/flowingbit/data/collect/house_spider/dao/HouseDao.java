@@ -10,7 +10,7 @@ public class HouseDao {
     private Statement stmt = null;
     // old:private static final String DRIVER = "com.mysql.jdbc.Driver";
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://localhost:3306/house?" + "user=root&password=password&useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/house?" + "user=root&password=password@zly&useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC";
     private static final String CREATE_TABLE_SQL =
             "  (`id` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '房源编号id',\n" +
                     "  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '标题',\n" +

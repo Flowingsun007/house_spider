@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 
+
 @Component
 @EnableScheduling
 public class CronSpider {
@@ -15,8 +16,10 @@ public class CronSpider {
     @Autowired
     SpiderService spiderService;
 
-    // 每天22点执行一次
-    @Scheduled(cron = "0 0 22 * * ?")
+    /**
+     * 每天22点59分执行
+     */
+    @Scheduled(cron = "0 59 22 * * ?")
     public void nanjingTask() {
         String tableName = spiderService.generateTableName("南京");
         if(new HouseDao().createHouseTable(tableName)){

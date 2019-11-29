@@ -17,7 +17,7 @@ public class CronSpider {
     SpiderService spiderService;
 
     /**
-     * 每天22点59分执行
+     * 每天22点59分执行，爬取南京房源
      */
     @Scheduled(cron = "0 59 22 * * ?")
     public void nanjingTask() {

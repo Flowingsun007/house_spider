@@ -56,7 +56,6 @@ public class HouseProcessor implements PageProcessor {
     @Override
     public void process(Page page) {
         try {
-            System.out.println("=============process()================");
             //Thread.sleep(500);
             // 部分二：定义如何抽取页面信息，并保存下来
             if (!page.getHtml().xpath("//ul[@class='sellListContent']").match()) {
@@ -64,7 +63,7 @@ public class HouseProcessor implements PageProcessor {
             } else{
                 int total = Integer.valueOf(page.getHtml().xpath("//div[@class='resultDes clear']/h2/span/text()").toString().strip());
                 int totalPage = total/30 + 1;
-                System.out.println("================总页数：" + totalPage + "当前页：" + count + "=================");
+                System.out.println("==================总页数：" + totalPage + "  当前页：" + count + "===================");
                 if((count<totalPage) && (count<=100)){
                     count++;
                     //将html输出到文件
@@ -73,7 +72,7 @@ public class HouseProcessor implements PageProcessor {
 
                     List<House> houseList = new ArrayList<>();
                     //开始提取页面信息
-                    System.out.println(page.getUrl().toString());
+                    System.out.println("parse page: " + page.getUrl().toString());
                     List<Selectable> targets = page.getHtml().xpath("//li[@class='clear LOGVIEWDATA LOGCLICKDATA']").nodes();
                     targets.forEach(e -> {
                         try {
@@ -162,7 +161,6 @@ public class HouseProcessor implements PageProcessor {
                     // 部分三：从页面发现后续的url地址来抓取
                     int index = page.getUrl().toString().indexOf("pg");
                     String newPage = page.getUrl().toString().substring(0, index) + "pg" + count + "/";
-                    System.out.println("new page: "+newPage);
                     page.addTargetRequest(newPage);
 
                 }else {

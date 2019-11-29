@@ -52,7 +52,6 @@ public class StreetProcessor implements PageProcessor {
     @Override
     public void process(Page page) {
         try {
-            System.out.println("=============process()================");
             // 部分二：定义如何抽取页面信息，并保存下来
             if (!page.getHtml().xpath("//div[@data-role='ershoufang']").match()){
                 page.setSkip(true);

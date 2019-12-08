@@ -57,9 +57,6 @@ public class StreetProcessor implements PageProcessor {
                 page.setSkip(true);
             }
             List<String> cityStreeNames = redisDAO.getList(cityName + ":all:all");
-            //将html输出到文件
-            // C:/Users/flowi/Desktop/lianjia.html
-            //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
             //开始提取页面信息
             System.out.println(page.getUrl().toString());
             List<Selectable> streets = page.getHtml().xpath("//div[@data-role='ershoufang']/div[2]/a").nodes();

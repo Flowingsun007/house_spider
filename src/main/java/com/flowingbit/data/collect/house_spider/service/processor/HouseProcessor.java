@@ -64,7 +64,7 @@ public class HouseProcessor implements PageProcessor {
                 int total = Integer.valueOf(page.getHtml().xpath("//div[@class='resultDes clear']/h2/span/text()").toString().strip());
                 int totalPage = total/30 + 1;
                 System.out.println("==================总页数：" + totalPage + "  当前页：" + count + "===================");
-                if((count<totalPage) && (count<=100)){
+                if((count<=totalPage) && (count<=100)){
                     count++;
                     //将html输出到文件
                     // C:/Users/flowi/Desktop/lianjia.html
@@ -102,10 +102,16 @@ public class HouseProcessor implements PageProcessor {
                             String decoration = null;
                             String floor = null;
                             String houseAge = null;
+                            house.setHouseAge(0);
                             try{
                                 decoration = houseInfo[3].strip();
                                 floor = houseInfo[4].strip();
                                 houseAge = StringUtils.strip(houseInfo[5].strip(), "年建");
+                                if(houseAge!=null||houseAge.length()>0){
+                                    if(StringUtils.isNumeric(houseAge)){
+                                        house.setHouseAge(Integer.valueOf(houseAge));
+                                    }
+                                }
                             }catch (ArrayIndexOutOfBoundsException ae){
 
                             }
@@ -121,13 +127,11 @@ public class HouseProcessor implements PageProcessor {
                             house.setAveragePrice(Double.valueOf(averagePrice));
                             house.setImage(image);
                             house.setWatch(Integer.valueOf(watch));
-                            //house.setView(Integer.valueOf(view));
                             house.setReleaseDate(releaseDate);
                             house.setRoomCount(roomCount);
                             house.setHouseArea(houseArea);
                             house.setTowards(towards);
                             house.setDecoration(decoration);
-                            house.setHouseAge(Integer.valueOf(houseAge));
                             //System.out.println(house.toString());
                             //houseDao.insert(house);
                             houseList.add(house);
@@ -150,7 +154,6 @@ public class HouseProcessor implements PageProcessor {
                             });
                             logger.error("Function process() >> targets.forEach() >> houseDao.batchInsert() Exception,details:",ee);
                             //将houseList存到文件
-                            //存成json文件
                             //String jsonstr = JSONArray.toJSONString(houseList);
                             //IOUtil.outFile(jsonstr, "houseList_" + city + region + ".json");
                             //发送邮件

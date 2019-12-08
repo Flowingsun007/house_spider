@@ -51,9 +51,6 @@ public class RegionProcessor implements PageProcessor {
             if (!page.getHtml().xpath("//div[@data-role='ershoufang']").match()){
                 page.setSkip(true);
             }
-            //将html输出到文件
-            // C:/Users/flowi/Desktop/lianjia.html
-            //IOUtil.outFile(page.getHtml().toString(), "/Users/zhaoluyang/Desktop/lianjia-header.html");
             //开始提取页面信息
             System.out.println(page.getUrl().toString());
             List<Selectable> regions = page.getHtml().xpath("//div[@data-role='ershoufang']/div[1]/a").nodes();
@@ -90,7 +87,7 @@ public class RegionProcessor implements PageProcessor {
                 //从"https://nj.lianjia.com/ershoufang/"开始抓
                 .addUrl(url)
                 //开启2个线程抓取
-                .thread(2)
+                .thread(1)
                 //启动爬虫
                 .run();
     }

@@ -23,19 +23,18 @@ public class HouseDao {
                     "  `average_price` double DEFAULT NULL COMMENT '均价(元/平米)',\n" +
                     "  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '首图链接',\n" +
                     "  `watch` int(1) DEFAULT NULL COMMENT '关注',\n" +
-                    "  `view` int(11) DEFAULT NULL COMMENT '带看次数',\n" +
                     "  `release_date` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '发布时间',\n" +
                     "  `room_count` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '房间数量',\n" +
                     "  `towards` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '朝向',\n" +
                     "  `house_area` double DEFAULT NULL COMMENT '面积(平米)',\n" +
                     "  `decoration` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '装修',\n" +
-                    "  `elevator` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '电梯',\n" +
+                    "  `house_age` int(4) DEFAULT NULL COMMENT '房屋建设年代',\n" +
                     "  `create_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',\n" +
                     "  PRIMARY KEY (`id`) USING BTREE\n" +
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=COMPACT;";
 
-    private static final String INSERT_SQL = "(`id`, `title`, `url` ,`city`,`region`, `street`,`community`, `floor`, `total_price`, `average_price`, `image`, `watch`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `elevator`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-    private static final String BATCH_INSERT_SQL = "(`id`, `title`, `url` ,`city`,`region`, `street`,`community`, `floor`, `total_price`, `average_price`, `image`, `watch`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `elevator`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+    private static final String INSERT_SQL = "(`id`, `title`, `url` ,`city`,`region`, `street`,`community`, `floor`, `total_price`, `average_price`, `image`, `watch`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `house_age`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+    private static final String BATCH_INSERT_SQL = "(`id`, `title`, `url` ,`city`,`region`, `street`,`community`, `floor`, `total_price`, `average_price`, `image`, `watch`, `release_date`, `room_count`, `towards`, `house_area`, `decoration`, `house_age`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     public HouseDao() {
         try {
             Class.forName(DRIVER);
@@ -76,13 +75,12 @@ public class HouseDao {
             ps.setDouble(10, house.getAveragePrice());
             ps.setString(11, house.getImage());
             ps.setInt(12, house.getWatch());
-            //s.setInt(13, house.getView());
             ps.setString(13, house.getReleaseDate());
             ps.setString(14, house.getRoomCount());
             ps.setString(15, house.getTowards());
             ps.setDouble(16, house.getHouseArea());
             ps.setString(17, house.getDecoration());
-            ps.setString(18, house.getElevator());
+            ps.setInt(18, house.getHouseAge());
             return ps.executeUpdate();
         } catch (SQLException e) {
             try {
@@ -123,13 +121,12 @@ public class HouseDao {
                 ps.setDouble(10, house.getAveragePrice());
                 ps.setString(11, house.getImage());
                 ps.setInt(12, house.getWatch());
-                //ps.setInt(13, house.getView());
                 ps.setString(13, house.getReleaseDate());
                 ps.setString(14, house.getRoomCount());
                 ps.setString(15, house.getTowards());
                 ps.setDouble(16, house.getHouseArea());
                 ps.setString(17, house.getDecoration());
-                ps.setString(18, house.getElevator());
+                ps.setInt(18, house.getHouseAge());
                 //批量添加sql，并执行
                 ps.addBatch();
                 if(i==len-1){

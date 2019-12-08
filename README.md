@@ -10,4 +10,4 @@ Lianjia second house spider链家二手房爬虫~ Springboot + Webmagic + Mysql 
 #### 基础依赖：安装mysql + redis,并在新建数据库：house
 #### a.git clone https://github.com/Flowingsun007/house_spider.git  或下载项目zip包至本地
 #### b.修改application.properties和HouseDao.java中的JDBC连接，配置用户名密码为你自己的。
-#### c.[POST]http://localhost:8005/house/spider?cityName=南京 即可开启自动爬取和存储。
+#### c.[POST]http://localhost:8009/house/spider?cityName=南京 即可开启自动爬取和存储。

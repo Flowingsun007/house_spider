@@ -84,9 +84,8 @@ public class HouseProcessor implements PageProcessor {
                                 image = e.xpath("//img[@class='lj-lazy']/@data-original").toString();
                             }
                             String s = e.xpath("//div[@class='houseInfo']/text()").toString();
-                            String community = e.xpath("//div[@class='houseInfo']/a/text()").toString();
-                            String floor = e.xpath("//div[@class='positionInfo']/text()").toString();
-                            String street = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
+                            String community = e.xpath("//div[@class='positionInfo']/a[1]/text()").toString();
+                            String street = e.xpath("//div[@class='positionInfo']/a[2]/text()").toString();
                             String totolPrice = e.xpath("//div[@class='totalPrice']/span[1]/text()").toString();
                             String averagePrice = StringUtils.strip(StringUtils.strip(e.xpath("//div[@class='unitPrice']/span[1]/text()").toString(), "单价"), "元/平米");
                             String followInfo = e.xpath("//div[@class='followInfo']/text()").toString();
@@ -101,10 +100,12 @@ public class HouseProcessor implements PageProcessor {
                             Double houseArea = Double.valueOf(houseInfo[1].strip().split("平米")[0]);
                             String towards = houseInfo[2].strip();
                             String decoration = null;
-                            String elevator = null;
+                            String floor = null;
+                            String houseAge = null;
                             try{
                                 decoration = houseInfo[3].strip();
-                                elevator = houseInfo[4].strip();
+                                floor = houseInfo[4].strip();
+                                houseAge = StringUtils.strip(houseInfo[5].strip(), "年建");
                             }catch (ArrayIndexOutOfBoundsException ae){
 
                             }
@@ -126,7 +127,7 @@ public class HouseProcessor implements PageProcessor {
                             house.setHouseArea(houseArea);
                             house.setTowards(towards);
                             house.setDecoration(decoration);
-                            house.setElevator(elevator);
+                            house.setHouseAge(Integer.valueOf(houseAge));
                             //System.out.println(house.toString());
                             //houseDao.insert(house);
                             houseList.add(house);

@@ -27,7 +27,7 @@ public class House implements Serializable {
     private String towards;
     private Double houseArea;
     private String decoration;
-    private String elevator;
+    private Integer houseAge;
     private Date createDate;
 
     public String getId() {
@@ -174,12 +174,12 @@ public class House implements Serializable {
         this.decoration = decoration;
     }
 
-    public String getElevator() {
-        return elevator;
+    public Integer getHouseAge() {
+        return houseAge;
     }
 
-    public void setElevator(String elevator) {
-        this.elevator = elevator;
+    public void setHouseAge(Integer houseAge) {
+        this.houseAge = houseAge;
     }
 
     public Date getCreateDate() {
@@ -211,7 +211,7 @@ public class House implements Serializable {
                 ", towards='" + towards + '\'' +
                 ", houseArea=" + houseArea +
                 ", decoration='" + decoration + '\'' +
-                ", elevator='" + elevator + '\'' +
+                ", houseAge=" + houseAge + '\'' +
                 ", createDate=" + createDate +
                 '}';
     }

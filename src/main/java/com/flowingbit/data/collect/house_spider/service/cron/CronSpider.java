@@ -19,7 +19,7 @@ public class CronSpider {
     /**
      * 每天21点59分执行，爬取南京房源
      */
-    @Scheduled(cron = "0 59 21 * * ?")
+    @Scheduled(cron = "0 59 22 * * ?")
     public void nanjingTask() {
         String tableName = spiderService.generateTableName("南京");
         if(new HouseDao().createHouseTable(tableName)){

@@ -49,7 +49,7 @@ public class SpiderService {
             processor.startProcessor("https://www.lianjia.com/city/");
         }
         if(cityList==null){
-            throw new NullPointerException(">>>>>>>>>>>>>>>>cityList==null<<<<<<<<<<<<<<<<");
+            logger.warn("runCitySpider()>>>>>>>>>>>>>>>>cityList==null\"");
         }
         //获取该城市所有行政区域，如cityName = 南京，区域：鼓楼、玄武、江宁、雨花、浦口...
         City city = cityList.parallelStream().filter(e->e.getName().equals(cityName)).findAny().orElseThrow(()->new NullPointerException("没找到此城市名"));

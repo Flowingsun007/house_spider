@@ -69,8 +69,8 @@ public class CityProcessor implements PageProcessor {
             //存成json文件
             String jsonstr = JSONArray.toJSONString(cityList);
             IOUtil.outFile(jsonstr, "citys.json");
-        }catch (Exception eee){
-            eee.printStackTrace();
+        }catch (Exception ee){
+            throw new RuntimeException("CityProcessor Error >> ",ee);
             //EmailService.sendMail("769010256@qq.com", page.getUrl().toString(), eee.toString());
         }
     }

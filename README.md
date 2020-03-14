@@ -1,5 +1,5 @@
 # house_spider
-Lianjia second house spider链家二手房爬虫~ Springboot + Webmagic + Mysql + Redis
+Lianjia house spider链家二手房爬虫~ Springboot + Webmagic + Mysql + Redis
 ## 简介
 #### - 基于Java8 +、开源爬虫框架WebMagic、Springboot的一个链家爬虫，上手即用，可以指定需要爬取的城市名称、或者爬取全国。
 #### - 数据存Mysql，默认根据搜索城市+日期自动建表，如搜索“南京”，则会通过JDBC新建表：“南京_20191127”
